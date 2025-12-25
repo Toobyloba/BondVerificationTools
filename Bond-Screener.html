@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bond Screener</title>
+    <style>
+        :root {
+            --color-primary: #208091;
+            --color-success: #2db566;
+            --color-error: #e84444;
+            --color-warning: #d4931f;
+            --color-bg: #f8f8f6;
+            --color-surface: #fff;
+            --color-text: #1a1a19;
+            --color-text-secondary: #666;
+            --color-border: #e0e0dd;
+            --space-16: 16px;
+            --space-12: 12px;
+            --space-8: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 32px;
+        }
+
+        h1 {
+            margin: 0 0 8px 0;
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            color: var(--color-text-secondary);
+            font-size: 14px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .card-title {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--color-text-secondary);
+            margin: 0 0 16px 0;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: var(--color-text);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--color-border);
+            border-radius: 6px;
+            font-size: 14px;
+            background: var(--color-surface);
+            color: var(--color-text);
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 2px rgba(32, 128, 145, 0.1);
+        }
+
+        button {
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 150ms;
+        }
+
+        button:hover {
+            background: #1a6a78;
+        }
+
+        button:active {
+            background: #155a68;
+        }
+
+        .results-section {
+            margin-top: 32px;
+        }
+
+        .checkpoint {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .checkpoint-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .checkpoint.pass {
+            border-left: 4px solid var(--color-success);
+            background: rgba(45, 181, 102, 0.05);
+        }
+
+        .checkpoint.fail {
+            border-left: 4px solid var(--color-error);
+            background: rgba(232, 68, 68, 0.05);
+        }
+
+        .checkpoint.warning {
+            border-left: 4px solid var(--color-warning);
+            background: rgba(212, 147, 31, 0.05);
+        }
+
+        .checkpoint-content {
+            flex: 1;
+        }
+
+        .checkpoint-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+            font-size: 14px;
+        }
+
+        .checkpoint-detail {
+            font-size: 13px;
+            color: var(--color-text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .checkpoint-formula {
+            font-size: 12px;
+            background: rgba(0, 0, 0, 0.02);
+            padding: 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            margin-top: 6px;
+            color: #555;
+        }
+
+        .decision-box {
+            background: var(--color-surface);
+            border: 2px solid var(--color-border);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 24px;
+            text-align: center;
+        }
+
+        .decision-box.buy {
+            border-color: var(--color-success);
+            background: rgba(45, 181, 102, 0.05);
+        }
+
+        .decision-box.buy .decision-title {
+            color: var(--color-success);
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .decision-box.reject {
+            border-color: var(--color-error);
+            background: rgba(232, 68, 68, 0.05);
+        }
+
+        .decision-box.reject .decision-title {
+            color: var(--color-error);
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .decision-subtitle {
+            font-size: 13px;
+            color: var(--color-text-secondary);
+            margin-top: 6px;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .metric {
+            background: rgba(0, 0, 0, 0.02);
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 12px;
+        }
+
+        .metric-label {
+            color: var(--color-text-secondary);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .metric-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--color-text);
+            font-family: monospace;
+        }
+
+        .error-message {
+            background: rgba(232, 68, 68, 0.1);
+            color: var(--color-error);
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            margin-bottom: 16px;
+        }
+
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Bond Screener</h1>
+            <p class="subtitle">Evaluate bonds across 7 critical checkpoints: yields, inflation risk, interest rate risk, credit risk, currency risk, and fine print.</p>
+        </header>
+
+        <div class="grid">
+            <!-- Step 0: Bond Static Data -->
+            <div class="card">
+                <h3 class="card-title">Step 0: Bond Data</h3>
+                <div class="form-group">
+                    <label>Face Value (F) - $</label>
+                    <input type="number" id="faceValue" value="1000" min="1" step="100">
+                </div>
+                <div class="form-group">
+                    <label>Current Market Price (P) - $</label>
+                    <input type="number" id="marketPrice" value="950" min="1" step="10">
+                </div>
+                <div class="form-group">
+                    <label>Coupon Rate (c) - %</label>
+                    <input type="number" id="couponRate" value="5" min="0" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label>Coupon Type</label>
+                    <select id="couponType">
+                        <option value="fixed">Fixed</option>
+                        <option value="floating">Floating</option>
+                        <option value="zero">Zero-Coupon</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Years to Maturity (n)</label>
+                    <input type="number" id="yearsToMaturity" value="10" min="0.1" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label>Currency</label>
+                    <select id="currency">
+                        <option>USD</option>
+                        <option>EUR</option>
+                        <option>GBP</option>
+                        <option>JPY</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Step 2, 4, 5: Market & Risk Data -->
+            <div class="card">
+                <h3 class="card-title">Steps 2, 4, 5: Risk Parameters</h3>
+                <div class="form-group">
+                    <label>Expected Inflation (π) - %</label>
+                    <input type="number" id="inflation" value="2.5" min="0" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label>Govt Bond YTM (Risk-Free) - %</label>
+                    <input type="number" id="riskFreeYTM" value="4" min="0" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label>Bond Rating</label>
+                    <select id="bondRating">
+                        <option>AAA</option>
+                        <option>AA</option>
+                        <option>A</option>
+                        <option>BBB</option>
+                        <option>BB</option>
+                        <option>B</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Expected Currency Depreciation (Δc) - %</label>
+                    <input type="number" id="currencyDepreciation" value="0" min="-10" max="10" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label>Home Currency Inflation (π_home) - %</label>
+                    <input type="number" id="homeInflation" value="2.5" min="0" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label>Your Intended Holding Period (years)</label>
+                    <input type="number" id="holdingPeriod" value="5" min="0.1" step="0.1">
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 6: Fine Print -->
+        <div class="card">
+            <h3 class="card-title">Step 6: Fine Print</h3>
+            <div class="two-col">
+                <div class="form-group">
+                    <label>Is Bond Callable?</label>
+                    <select id="isCallable">
+                        <option value="false">No</option>
+                        <option value="true">Yes</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Daily Trading Volume - $ millions</label>
+                    <input type="number" id="tradingVolume" value="5" min="0" step="0.1">
+                </div>
+            </div>
+        </div>
+
+        <button onclick="evaluateBond()" style="margin-top: 24px; width: 100%; padding: 14px; font-size: 16px;">
+            Run Bond Evaluation
+        </button>
+
+        <!-- Results Section -->
+        <div class="results-section" id="resultsSection" style="display: none;">
+            <h2 style="margin: 0 0 20px 0; font-size: 20px;">Screening Results</h2>
+
+            <div id="errorContainer"></div>
+
+            <div id="metricsContainer"></div>
+
+            <!-- Step 1 Results -->
+            <div>
+                <h3 style="font-size: 14px; margin: 24px 0 12px 0; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Step 1: Core Yields</h3>
+                <div id="step1Results"></div>
+            </div>
+
+            <!-- Step 2 Results -->
+            <div>
+                <h3 style="font-size: 14px; margin: 24px 0 12px 0; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Step 2: Inflation Risk</h3>
+                <div id="step2Results"></div>
+            </div>
+
+            <!-- Step 3 Results -->
+            <div>
+                <h3 style="font-size: 14px; margin: 24px 0 12px 0; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Step 3: Interest Rate Risk</h3>
+                <div id="step3Results"></div>
+            </div>
+
+            <!-- Step 4 Results -->
+            <div>
+                <h3 style="font-size: 14px; margin: 24px 0 12px 0; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Step 4: Credit Risk</h3>
+                <div id="step4Results"></div>
+            </div>
+
+            <!-- Step 5 Results -->
+            <div>
+                <h3 style="font-size: 14px; margin: 24px 0 12px 0; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Step 5: Currency Risk</h3>
+                <div id="step5Results"></div>
+            </div>
+
+            <!-- Step 6 Results -->
+            <div>
+                <h3 style="font-size: 14px; margin: 24px 0 12px 0; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Step 6: Fine Print</h3>
+                <div id="step6Results"></div>
+            </div>
+
+            <!-- Final Decision -->
+            <div id="decisionBox"></div>
+        </div>
+    </div>
+
+    <script>
+        // Numerical solver for YTM (Newton-Raphson)
+        function solveYTM(P, F, c, n, initialGuess = 0.05) {
+            const maxIterations = 100;
+            const tolerance = 1e-10;
+            let y = initialGuess;
+
+            for (let i = 0; i < maxIterations; i++) {
+                let PV = 0;
+                let dPV = 0;
+
+                for (let t = 1; t <= n; t++) {
+                    const couponPayment = F * c;
+                    PV += couponPayment / Math.pow(1 + y, t);
+                    dPV -= t * couponPayment / Math.pow(1 + y, t + 1);
+                }
+
+                PV += F / Math.pow(1 + y, n);
+                dPV -= n * F / Math.pow(1 + y, n + 1);
+
+                PV -= P;
+
+                if (Math.abs(PV) < tolerance) return y;
+
+                y = y - PV / dPV;
+
+                if (y < -0.99) y = -0.99;
+            }
+
+            return y;
+        }
+
+        // Macaulay Duration calculation
+        function calculateDuration(F, c, y, n, P) {
+            let numerator = 0;
+
+            for (let t = 1; t <= n; t++) {
+                const couponPayment = F * c;
+                numerator += t * couponPayment / Math.pow(1 + y, t);
+            }
+
+            numerator += n * F / Math.pow(1 + y, n);
+
+            return numerator / P;
+        }
+
+        function createCheckpoint(title, passed, detail, formula = null) {
+            const status = passed ? 'pass' : 'fail';
+            const icon = passed ? '✅' : '❌';
+            let html = `
+                <div class="checkpoint ${status}">
+                    <div class="checkpoint-icon">${icon}</div>
+                    <div class="checkpoint-content">
+                        <div class="checkpoint-title">${title}</div>
+                        <div class="checkpoint-detail">${detail}</div>
+            `;
+            if (formula) {
+                html += `<div class="checkpoint-formula">${formula}</div>`;
+            }
+            html += `
+                    </div>
+                </div>
+            `;
+            return html;
+        }
+
+        function evaluateBond() {
+            const resultsSection = document.getElementById('resultsSection');
+            const errorContainer = document.getElementById('errorContainer');
+            errorContainer.innerHTML = '';
+
+            try {
+                // Get inputs
+                const F = parseFloat(document.getElementById('faceValue').value);
+                const P = parseFloat(document.getElementById('marketPrice').value);
+                const c = parseFloat(document.getElementById('couponRate').value) / 100;
+                const n = parseFloat(document.getElementById('yearsToMaturity').value);
+                const inflation = parseFloat(document.getElementById('inflation').value) / 100;
+                const riskFreeYTM = parseFloat(document.getElementById('riskFreeYTM').value) / 100;
+                const currencyDep = parseFloat(document.getElementById('currencyDepreciation').value) / 100;
+                const homeInflation = parseFloat(document.getElementById('homeInflation').value) / 100;
+                const holdingPeriod = parseFloat(document.getElementById('holdingPeriod').value);
+                const isCallable = document.getElementById('isCallable').value === 'true';
+                const tradingVolume = parseFloat(document.getElementById('tradingVolume').value);
+                const bondRating = document.getElementById('bondRating').value;
+
+                // Validate inputs
+                if (P <= 0 || F <= 0 || n <= 0) {
+                    throw new Error('Price, Face Value, and Years to Maturity must be positive.');
+                }
+
+                // Step 1: Core Yields
+                const CY = (F * c) / P;
+                const YTM = solveYTM(P, F, c, n);
+
+                let step1HTML = '';
+
+                if (YTM <= 0) {
+                    step1HTML += createCheckpoint(
+                        'YTM Check',
+                        false,
+                        `YTM = ${(YTM * 100).toFixed(2)}% (negative or zero, reject immediately)`,
+                        `YTM calculation via Newton-Raphson method`
+                    );
+                    resultsSection.style.display = 'block';
+                    document.getElementById('step1Results').innerHTML = step1HTML;
+                    document.getElementById('decisionBox').innerHTML = `
+                        <div class="decision-box reject">
+                            <p class="decision-title">❌ REJECT</p>
+                            <p class="decision-subtitle">Bond fails immediately: YTM ≤ 0%. You would be paying to lend money.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                step1HTML += createCheckpoint(
+                    'Current Yield (CY)',
+                    true,
+                    `CY = ${(CY * 100).toFixed(2)}% (immediate cash return)`,
+                    `CY = (${F} × ${(c * 100).toFixed(2)}%) / ${P} = ${(CY * 100).toFixed(2)}%`
+                );
+
+                step1HTML += createCheckpoint(
+                    'Yield to Maturity (YTM)',
+                    YTM > 0,
+                    `YTM = ${(YTM * 100).toFixed(2)}% (locked-in market rate)`,
+                    `Solved via Newton-Raphson from DCF formula`
+                );
+
+                document.getElementById('step1Results').innerHTML = step1HTML;
+
+                // Step 2: Real Yield
+                const RY = (1 + YTM) / (1 + inflation) - 1;
+                let step2HTML = '';
+
+                step2HTML += createCheckpoint(
+                    'Real Yield (RY)',
+                    RY > 0.015,
+                    `RY = ${(RY * 100).toFixed(2)}% (purchasing power-adjusted return). Threshold: > 1.5%`,
+                    `RY = (1 + ${(YTM * 100).toFixed(2)}%) / (1 + ${(inflation * 100).toFixed(2)}%) - 1 = ${(RY * 100).toFixed(2)}%`
+                );
+
+                document.getElementById('step2Results').innerHTML = step2HTML;
+
+                // Step 3: Duration & Interest Rate Risk
+                const D = calculateDuration(F, c, YTM, n, P);
+                const durationThreshold = n / 2;
+                const priceChangeEstimate = -D * 0.01;
+
+                let step3HTML = '';
+
+                step3HTML += createCheckpoint(
+                    'Macaulay Duration',
+                    D < durationThreshold,
+                    `Duration = ${D.toFixed(2)} years (threshold: < ${durationThreshold.toFixed(1)} = n/2). If rates rise 1%, price falls ~${(Math.abs(priceChangeEstimate) * 100).toFixed(2)}%`,
+                    `D = Σ(t × CF_t / (1+y)^t) / P = ${D.toFixed(2)}`
+                );
+
+                step3HTML += createCheckpoint(
+                    'Volatility vs. Holding Period',
+                    D <= holdingPeriod,
+                    `Your holding period (${holdingPeriod} yrs) ${D <= holdingPeriod ? 'exceeds' : 'is less than'} duration (${D.toFixed(2)} yrs).`,
+                    `If holding to maturity, duration risk is mitigated.`
+                );
+
+                document.getElementById('step3Results').innerHTML = step3HTML;
+
+                // Step 4: Credit Spread
+                const spread = YTM - riskFreeYTM;
+                const minSpreadThreshold = bondRating === 'BBB' ? 0.015 : bondRating.startsWith('BB') ? 0.04 : 0.008;
+
+                let step4HTML = '';
+
+                step4HTML += createCheckpoint(
+                    'Credit Spread vs. Rating',
+                    spread > minSpreadThreshold,
+                    `Spread = ${(spread * 100).toFixed(2)}% (threshold for ${bondRating}: > ${(minSpreadThreshold * 100).toFixed(1)}%). You are compensated for default risk.`,
+                    `Spread = YTM (${(YTM * 100).toFixed(2)}%) - Risk-Free YTM (${(riskFreeYTM * 100).toFixed(2)}%) = ${(spread * 100).toFixed(2)}%`
+                );
+
+                document.getElementById('step4Results').innerHTML = step4HTML;
+
+                // Step 5: Currency Risk
+                const realReturnHomeC = ((1 + YTM) * (1 + currencyDep)) / (1 + homeInflation) - 1;
+
+                let step5HTML = '';
+
+                step5HTML += createCheckpoint(
+                    'Real Return in Home Currency',
+                    realReturnHomeC > 0,
+                    `Real Return = ${(realReturnHomeC * 100).toFixed(2)}% (currency depreciation: ${(currencyDep * 100).toFixed(2)}%). ${realReturnHomeC > 0 ? 'Positive wealth preservation.' : 'You lose wealth in home currency.'}`,
+                    `(1 + YTM) × (1 + Δc) / (1 + π_home) - 1 = ${(realReturnHomeC * 100).toFixed(2)}%`
+                );
+
+                document.getElementById('step5Results').innerHTML = step5HTML;
+
+                // Step 6: Fine Print
+                let step6HTML = '';
+
+                const callabilityPass = !isCallable || YTM > 0.05;
+                step6HTML += createCheckpoint(
+                    'Callability Check',
+                    callabilityPass,
+                    `Bond is ${isCallable ? 'callable' : 'not callable'}. ${isCallable && YTM <= 0.05 ? 'Issuer will call if rates drop.' : 'Safe.'}`,
+                    `If callable AND YTM < 5%, issuer likely refinances at lower cost.`
+                );
+
+                const liquidityPass = tradingVolume >= 1;
+                step6HTML += createCheckpoint(
+                    'Liquidity Check',
+                    liquidityPass,
+                    `Daily volume = $${tradingVolume.toFixed(1)}M. ${tradingVolume >= 1 ? 'Sufficient.' : 'Poor liquidity. Hold to maturity only.'}`,
+                    `Liquid bonds have volume > $1M/day for easy exit.`
+                );
+
+                document.getElementById('step6Results').innerHTML = step6HTML;
+
+                // Final Decision Matrix
+                const allPass = YTM > 0 && RY > 0.015 && D < durationThreshold && spread > minSpreadThreshold && realReturnHomeC > 0 && callabilityPass && liquidityPass;
+
+                let decisionHTML = '';
+                if (allPass) {
+                    decisionHTML = `
+                        <div class="decision-box buy">
+                            <p class="decision-title">✅ BUY</p>
+                            <p class="decision-subtitle">Bond passes all 7 checkpoints. Recommended for purchase.</p>
+                        </div>
+                    `;
+                } else {
+                    decisionHTML = `
+                        <div class="decision-box reject">
+                            <p class="decision-title">❌ REJECT</p>
+                            <p class="decision-subtitle">Bond fails one or more checkpoints. Search for better opportunities.</p>
+                        </div>
+                    `;
+                }
+
+                document.getElementById('decisionBox').innerHTML = decisionHTML;
+
+                // Metrics Summary
+                let metricsHTML = `
+                    <div class="metrics-grid">
+                        <div class="metric">
+                            <div class="metric-label">Current Yield</div>
+                            <div class="metric-value">${(CY * 100).toFixed(2)}%</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Yield to Maturity</div>
+                            <div class="metric-value">${(YTM * 100).toFixed(2)}%</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Real Yield</div>
+                            <div class="metric-value">${(RY * 100).toFixed(2)}%</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Macaulay Duration</div>
+                            <div class="metric-value">${D.toFixed(2)} yrs</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Credit Spread</div>
+                            <div class="metric-value">${(spread * 100).toFixed(2)}%</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Price Sensitivity</div>
+                            <div class="metric-value">${(priceChangeEstimate * 100).toFixed(2)}%</div>
+                        </div>
+                    </div>
+                `;
+
+                document.getElementById('metricsContainer').innerHTML = metricsHTML;
+                resultsSection.style.display = 'block';
+
+            } catch (error) {
+                errorContainer.innerHTML = `<div class="error-message">${error.message}</div>`;
+                resultsSection.style.display = 'block';
+            }
+        }
+
+        // Auto-evaluate on page load with default values
+        window.addEventListener('load', function() {
+            // Don't auto-run; wait for user to click button
+        });
+    </script>
+</body>
+</html>

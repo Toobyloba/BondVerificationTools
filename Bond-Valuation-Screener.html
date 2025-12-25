@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bond Valuation & Value Investor Screener</title>
+    <style>
+        :root {
+            --color-primary: #208091;
+            --color-success: #2db566;
+            --color-warning: #f59e0b;
+            --color-error: #e84444;
+            --color-bg: #f8f8f6;
+            --color-surface: #fff;
+            --color-text: #1a1a19;
+            --color-text-secondary: #666;
+            --color-border: #e0e0dd;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 32px;
+            border-bottom: 2px solid var(--color-border);
+            padding-bottom: 16px;
+        }
+
+        h1 {
+            margin: 0 0 8px 0;
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            color: var(--color-text-secondary);
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 1024px) {
+            .grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .card-title {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--color-text-secondary);
+            margin: 0 0 16px 0;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: var(--color-text);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--color-border);
+            border-radius: 6px;
+            font-size: 14px;
+            background: var(--color-surface);
+            color: var(--color-text);
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 2px rgba(32, 128, 145, 0.1);
+        }
+
+        button {
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 150ms;
+        }
+
+        button:hover {
+            background: #1a6a78;
+        }
+
+        button:active {
+            background: #155a68;
+        }
+
+        .results-section {
+            margin-top: 32px;
+        }
+
+        .step-card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .step-card.pass {
+            border-left: 4px solid var(--color-success);
+            background: rgba(45, 181, 102, 0.05);
+        }
+
+        .step-card.caution {
+            border-left: 4px solid var(--color-warning);
+            background: rgba(245, 158, 11, 0.05);
+        }
+
+        .step-card.fail {
+            border-left: 4px solid var(--color-error);
+            background: rgba(232, 68, 68, 0.05);
+        }
+
+        .step-header {
+            font-weight: 600;
+            font-size: 15px;
+            margin-bottom: 8px;
+        }
+
+        .step-detail {
+            font-size: 13px;
+            color: var(--color-text-secondary);
+            line-height: 1.6;
+        }
+
+        .valuation-box {
+            background: var(--color-surface);
+            border: 2px solid var(--color-primary);
+            border-radius: 8px;
+            padding: 24px;
+            margin: 24px 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .valuation-box {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .valuation-item {
+            text-align: center;
+        }
+
+        .valuation-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: var(--color-text-secondary);
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .valuation-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--color-primary);
+            font-family: monospace;
+            margin-bottom: 4px;
+        }
+
+        .valuation-status {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+        }
+
+        .decision-box {
+            background: var(--color-surface);
+            border: 3px solid var(--color-border);
+            border-radius: 8px;
+            padding: 32px;
+            margin-top: 32px;
+            text-align: center;
+        }
+
+        .decision-box.buy {
+            border-color: var(--color-success);
+            background: rgba(45, 181, 102, 0.05);
+        }
+
+        .decision-box.caution {
+            border-color: var(--color-warning);
+            background: rgba(245, 158, 11, 0.05);
+        }
+
+        .decision-box.avoid {
+            border-color: var(--color-error);
+            background: rgba(232, 68, 68, 0.05);
+        }
+
+        .decision-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .decision-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin: 0 0 8px 0;
+        }
+
+        .decision-box.buy .decision-title {
+            color: var(--color-success);
+        }
+
+        .decision-box.caution .decision-title {
+            color: var(--color-warning);
+        }
+
+        .decision-box.avoid .decision-title {
+            color: var(--color-error);
+        }
+
+        .decision-subtitle {
+            font-size: 14px;
+            color: var(--color-text-secondary);
+            margin: 0;
+        }
+
+        .error-message {
+            background: rgba(232, 68, 68, 0.1);
+            color: var(--color-error);
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            margin-bottom: 16px;
+            border-left: 4px solid var(--color-error);
+        }
+
+        .risk-filter-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .risk-item {
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            border-left: 3px solid var(--color-border);
+        }
+
+        .risk-item.pass {
+            background: rgba(45, 181, 102, 0.1);
+            border-color: var(--color-success);
+        }
+
+        .risk-item.caution {
+            background: rgba(245, 158, 11, 0.1);
+            border-color: var(--color-warning);
+        }
+
+        .risk-item.fail {
+            background: rgba(232, 68, 68, 0.1);
+            border-color: var(--color-error);
+        }
+
+        .risk-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .risk-status {
+            font-size: 11px;
+            color: var(--color-text-secondary);
+        }
+
+        .section-title {
+            font-size: 20px;
+            margin: 24px 0 16px 0;
+            color: var(--color-primary);
+            border-bottom: 2px solid var(--color-border);
+            padding-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Bond Valuation & Value Investor Screener</h1>
+            <p class="subtitle">6-Step Framework: Fair Price Calculation, Valuation Check, Risk Filtering</p>
+        </header>
+
+        <div class="grid">
+            <div class="card">
+                <h3 class="card-title">Step 0: Bond Basics</h3>
+                <div class="form-group">
+                    <label>Bond Price (Market) - $</label>
+                    <input type="number" id="bondPrice" value="950" min="1" step="10">
+                </div>
+                <div class="form-group">
+                    <label>Face Value - $</label>
+                    <input type="number" id="faceValue" value="1000" min="1" step="100">
+                </div>
+                <div class="form-group">
+                    <label>Coupon Rate - %</label>
+                    <input type="number" id="couponRate" value="5" min="0" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label>Payment Frequency</label>
+                    <select id="frequency">
+                        <option value="1">Annual (m=1)</option>
+                        <option value="2" selected>Semi-Annual (m=2)</option>
+                        <option value="4">Quarterly (m=4)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Years to Maturity</label>
+                    <input type="number" id="yearsToMaturity" value="10" min="0.1" step="0.1">
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title">Step 0: Market Context</h3>
+                <div class="form-group">
+                    <label>Yield to Maturity (YTM) - %</label>
+                    <input type="number" id="ytm" value="6" min="0" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label>Your Required Yield - %</label>
+                    <input type="number" id="requiredYield" value="5.5" min="0" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label>Coupon Type</label>
+                    <select id="couponType">
+                        <option value="fixed" selected>Fixed</option>
+                        <option value="floating">Floating</option>
+                        <option value="zero">Zero-Coupon</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Credit Rating</label>
+                    <select id="creditRating">
+                        <option>AAA</option>
+                        <option>AA</option>
+                        <option>A</option>
+                        <option selected>BBB</option>
+                        <option>BB</option>
+                        <option>B</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title">Steps 5-6: Risk Filters</h3>
+                <div class="form-group">
+                    <label>Is Bond Callable?</label>
+                    <select id="isCallable">
+                        <option value="false" selected>No</option>
+                        <option value="true">Yes</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Liquidity (Bid-Ask Spread)</label>
+                    <select id="liquidity">
+                        <option value="tight" selected>Tight (&lt;0.25%)</option>
+                        <option value="moderate">Moderate (0.25-0.75%)</option>
+                        <option value="wide">Wide (&gt;0.75%)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Currency Risk</label>
+                    <select id="currencyRisk">
+                        <option value="none" selected>Domestic (No Risk)</option>
+                        <option value="low">Low FX Risk</option>
+                        <option value="high">High FX Risk</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Holding Plan</label>
+                    <select id="holdingPlan">
+                        <option value="maturity" selected>Hold to Maturity</option>
+                        <option value="early">May Sell Early</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <button onclick="evaluateBond()" style="margin-top: 24px; width: 100%; padding: 14px; font-size: 16px;">
+            Run Bond Valuation Analysis (6 Steps)
+        </button>
+
+        <div class="results-section" id="resultsSection" style="display: none;">
+            <div id="errorContainer"></div>
+
+            <h2 class="section-title">Steps 1-3: Cash Flows & Yields Analysis</h2>
+            <div id="steps123Results"></div>
+
+            <h2 class="section-title">Step 4: Valuation Check (Fair Price vs Market Price)</h2>
+            <div id="valuationBox"></div>
+            <div id="valuationDetail"></div>
+
+            <h2 class="section-title">Step 5: Risk Filter Analysis</h2>
+            <div id="riskFilters"></div>
+
+            <h2 class="section-title">Step 6: Final Investment Decision</h2>
+            <div id="finalDecision"></div>
+        </div>
+    </div>
+
+    <script>
+        function calculateFairPrice(faceValue, couponRate, requiredYield, yearsToMaturity, frequency) {
+            const m = parseFloat(frequency);
+            const N = yearsToMaturity * m;
+            const y_m = requiredYield / m;
+            const C = faceValue * (couponRate / m);
+            let fairPrice = 0;
+
+            for (let t = 1; t <= N; t++) {
+                fairPrice += C / Math.pow(1 + y_m, t);
+            }
+
+            fairPrice += faceValue / Math.pow(1 + y_m, N);
+            return fairPrice;
+        }
+
+        function evaluateBond() {
+            const resultsSection = document.getElementById('resultsSection');
+            const errorContainer = document.getElementById('errorContainer');
+            errorContainer.innerHTML = '';
+
+            try {
+                const bondPrice = parseFloat(document.getElementById('bondPrice').value);
+                const faceValue = parseFloat(document.getElementById('faceValue').value);
+                const couponRate = parseFloat(document.getElementById('couponRate').value) / 100;
+                const yearsToMaturity = parseFloat(document.getElementById('yearsToMaturity').value);
+                const ytm = parseFloat(document.getElementById('ytm').value) / 100;
+                const requiredYield = parseFloat(document.getElementById('requiredYield').value) / 100;
+                const frequency = document.getElementById('frequency').value;
+                const couponType = document.getElementById('couponType').value;
+                const creditRating = document.getElementById('creditRating').value;
+                const isCallable = document.getElementById('isCallable').value === 'true';
+                const liquidity = document.getElementById('liquidity').value;
+                const currencyRisk = document.getElementById('currencyRisk').value;
+                const holdingPlan = document.getElementById('holdingPlan').value;
+
+                if (bondPrice <= 0 || faceValue <= 0 || yearsToMaturity <= 0) {
+                    throw new Error('All prices and years must be positive.');
+                }
+
+                const annualCoupon = faceValue * couponRate;
+                const m = parseFloat(frequency);
+                const C = faceValue * (couponRate / m);
+                const currentYield = (annualCoupon / bondPrice) * 100;
+
+                let steps123HTML = `
+                    <div class="step-card pass">
+                        <div class="step-header">Step 1: Coupon Cash Flows</div>
+                        <div class="step-detail">
+                            Annual Coupon = F × c = $${faceValue} × ${(couponRate * 100).toFixed(2)}% = $${annualCoupon.toFixed(2)}<br>
+                            Per Period (m=${m}): C = $${annualCoupon.toFixed(2)} / ${m} = $${C.toFixed(2)}<br>
+                            Coupon Type: ${couponType.toUpperCase()}
+                        </div>
+                    </div>
+                    <div class="step-card pass">
+                        <div class="step-header">Step 2: Current Yield (Income Snapshot)</div>
+                        <div class="step-detail">
+                            Current Yield = Annual Coupon / Bond Price = $${annualCoupon.toFixed(2)} / $${bondPrice} = <strong>${currentYield.toFixed(2)}%</strong><br>
+                            <em>Note: Does not account for pull-to-par capital gain/loss</em>
+                        </div>
+                    </div>
+                    <div class="step-card pass">
+                        <div class="step-header">Step 3: Yield to Maturity (Market Rate)</div>
+                        <div class="step-detail">
+                            YTM = ${(ytm * 100).toFixed(2)}% (discount rate that makes PV of cash flows = Bond Price)<br>
+                            <strong>This is the true market interest rate for this bond.</strong>
+                        </div>
+                    </div>
+                `;
+
+                document.getElementById('steps123Results').innerHTML = steps123HTML;
+
+                const fairPrice = calculateFairPrice(faceValue, couponRate, requiredYield, yearsToMaturity, frequency);
+                const priceVsFair = ((bondPrice - fairPrice) / fairPrice) * 100;
+                const isCheap = bondPrice < fairPrice;
+                const discountPercent = Math.abs(priceVsFair);
+
+                let valuationStatus = 'pass';
+                let valuationInterpretation = '';
+
+                if (isCheap && discountPercent >= 5) {
+                    valuationStatus = 'pass';
+                    valuationInterpretation = `Significantly underpriced (${discountPercent.toFixed(2)}% discount). Strong buy signal.`;
+                } else if (isCheap && discountPercent > 0) {
+                    valuationStatus = 'caution';
+                    valuationInterpretation = `Slightly underpriced (${discountPercent.toFixed(2)}% discount). Acceptable value.`;
+                } else if (priceVsFair > 0 && priceVsFair <= 5) {
+                    valuationStatus = 'caution';
+                    valuationInterpretation = `Slightly overpriced (${priceVsFair.toFixed(2)}% premium). Proceed with caution.`;
+                } else {
+                    valuationStatus = 'fail';
+                    valuationInterpretation = `Significantly overpriced (${priceVsFair.toFixed(2)}% premium). Avoid.`;
+                }
+
+                let valuationBoxHTML = `
+                    <div class="valuation-box">
+                        <div class="valuation-item">
+                            <div class="valuation-label">Fair Price (Your Required Yield)</div>
+                            <div class="valuation-value">$${fairPrice.toFixed(2)}</div>
+                            <div class="valuation-status">Based on ${(requiredYield * 100).toFixed(2)}% required yield</div>
+                        </div>
+                        <div class="valuation-item">
+                            <div class="valuation-label">Market Price</div>
+                            <div class="valuation-value">$${bondPrice.toFixed(2)}</div>
+                            <div class="valuation-status">Current market quote</div>
+                        </div>
+                        <div class="valuation-item">
+                            <div class="valuation-label">Price vs Fair</div>
+                            <div class="valuation-value" style="color: ${isCheap ? 'var(--color-success)' : 'var(--color-error)'};\">${isCheap ? '-' : '+'}${discountPercent.toFixed(2)}%</div>
+                            <div class="valuation-status">${isCheap ? 'Discount' : 'Premium'}</div>
+                        </div>
+                    </div>
+                `;
+
+                document.getElementById('valuationBox').innerHTML = valuationBoxHTML;
+
+                let valuationDetailHTML = `
+                    <div class="step-card ${valuationStatus}">
+                        <div class="step-header">Step 4: Valuation Decision</div>
+                        <div class="step-detail">
+                            ${valuationInterpretation}<br><br>
+                            <strong>Rule:</strong> If Bond Price &lt; Fair Price, bond is cheap. If Bond Price &gt; Fair Price, bond is expensive.
+                        </div>
+                    </div>
+                `;
+
+                document.getElementById('valuationDetail').innerHTML = valuationDetailHTML;
+
+                const risks = [];
+
+                const investmentGrade = ['AAA', 'AA', 'A', 'BBB'].includes(creditRating);
+                risks.push({
+                    name: 'Credit Risk',
+                    status: investmentGrade ? 'pass' : 'caution',
+                    detail: investmentGrade ? `${creditRating} - Investment Grade` : `${creditRating} - High Yield/Junk`
+                });
+
+                const couponRiskStatus = couponType === 'fixed' ? 'pass' : couponType === 'floating' ? 'caution' : 'fail';
+                risks.push({
+                    name: 'Coupon Type',
+                    status: couponRiskStatus,
+                    detail: couponType === 'fixed' ? 'Fixed - Predictable' : couponType === 'floating' ? 'Floating - Uncertain' : 'Zero - Rate Sensitive'
+                });
+
+                risks.push({
+                    name: 'Callability',
+                    status: isCallable ? 'caution' : 'pass',
+                    detail: isCallable ? 'Callable - Refinance Risk' : 'Non-Callable - Yield Locked'
+                });
+
+                const liquidityStatus = liquidity === 'tight' ? 'pass' : liquidity === 'moderate' ? 'caution' : 'fail';
+                risks.push({
+                    name: 'Liquidity',
+                    status: liquidityStatus,
+                    detail: liquidity === 'tight' ? 'Tight - Easy Exit' : liquidity === 'moderate' ? 'Moderate - Some Friction' : 'Wide - Difficult Exit'
+                });
+
+                const currencyStatus = currencyRisk === 'none' ? 'pass' : currencyRisk === 'low' ? 'caution' : 'fail';
+                risks.push({
+                    name: 'Currency Risk',
+                    status: currencyStatus,
+                    detail: currencyRisk === 'none' ? 'Domestic - No FX Risk' : currencyRisk === 'low' ? 'Low Volatility' : 'High Volatility'
+                });
+
+                const holdingStatus = holdingPlan === 'maturity' ? 'pass' : 'caution';
+                risks.push({
+                    name: 'Holding Plan',
+                    status: holdingStatus,
+                    detail: holdingPlan === 'maturity' ? 'Hold to Maturity' : 'May Sell Early'
+                });
+
+                let riskHTML = '<div class="risk-filter-grid">';
+                risks.forEach(risk => {
+                    riskHTML += `
+                        <div class="risk-item ${risk.status}">
+                            <div class="risk-name">${risk.name}</div>
+                            <div class="risk-status">${risk.detail}</div>
+                        </div>
+                    `;
+                });
+                riskHTML += '</div>';
+
+                document.getElementById('riskFilters').innerHTML = riskHTML;
+
+                const meetsReturn = ytm >= requiredYield;
+                const passesAllRisks = risks.every(r => r.status !== 'fail');
+                const mainCriteriaPass = meetsReturn && passesAllRisks;
+                const valuationPass = isCheap || (priceVsFair <= 2);
+
+                let recommendation = '';
+                let recommendationClass = '';
+                let icon = '';
+
+                if (mainCriteriaPass && valuationPass) {
+                    recommendation = 'BUY';
+                    recommendationClass = 'buy';
+                    icon = '✅';
+                } else if (!mainCriteriaPass) {
+                    recommendation = 'AVOID';
+                    recommendationClass = 'avoid';
+                    icon = '❌';
+                } else if (mainCriteriaPass && !valuationPass) {
+                    recommendation = 'HOLD / WATCH';
+                    recommendationClass = 'caution';
+                    icon = '⏸️';
+                } else {
+                    recommendation = 'CAUTION';
+                    recommendationClass = 'caution';
+                    icon = '⚠️';
+                }
+
+                let finalHTML = `
+                    <div class="decision-box ${recommendationClass}">
+                        <div class="decision-icon">${icon}</div>
+                        <h2 class="decision-title">${recommendation}</h2>
+                        <p class="decision-subtitle">
+                            ${recommendation === 'BUY' ? 'Meets return target, passes risk filters, and is undervalued. Recommended for purchase.' : 
+                              recommendation === 'AVOID' ? 'Fails return target or critical risk filter. Search for better opportunities.' : 
+                              recommendation === 'HOLD / WATCH' ? 'Meets all criteria but trading at fair/premium price. Monitor for better entry.' :
+                              'Meets criteria but has caution flags. Acceptable only with reduced position size.'}
+                        </p>
+                    </div>
+                `;
+
+                document.getElementById('finalDecision').innerHTML = finalHTML;
+                resultsSection.style.display = 'block';
+
+            } catch (error) {
+                errorContainer.innerHTML = `<div class="error-message">${error.message}</div>`;
+                resultsSection.style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>
