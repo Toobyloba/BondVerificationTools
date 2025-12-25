@@ -99,6 +99,124 @@
             border-radius: 12px;
             text-align: left;
             margin-bottom: 2rem;
+            margin-top: auto;
+        }
+
+        /* Author Card Specific Styles */
+        .author-card {
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            background: rgba(59, 130, 246, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .author-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 1rem;
+            border: 2px solid var(--primary-color);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .author-bio {
+            color: #94a3b8;
+            font-size: 0.9375rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .read-more-btn {
+            color: var(--primary-color);
+            background: none;
+            border: none;
+            padding: 0;
+            font-size: 0.875rem;
+            cursor: pointer;
+            text-decoration: underline;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+
+        .donate-btn {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            font-weight: 700;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: transform 0.2s;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 0.5rem;
+        }
+
+        .donate-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+        }
+
+        /* Lightbox Styles */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            backdrop-filter: blur(5px);
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .lightbox.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .lightbox-content {
+            background: #1e293b;
+            padding: 2.5rem;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .lightbox.active .lightbox-content {
+            transform: scale(1);
+        }
+
+        .close-lightbox {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .lightbox-bio {
+            text-align: left;
+            margin: 1.5rem 0;
+            color: #cbd5e1;
+            line-height: 1.7;
         }
 
         .tool-badge {
@@ -158,15 +276,149 @@
                 overflow-x: auto;
             }
         }
+
+        /* Author Card Specific Styles */
+        .author-card {
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            background: rgba(59, 130, 246, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .author-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 1rem;
+            border: 2px solid var(--primary-color);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .author-bio {
+            color: #94a3b8;
+            font-size: 0.9375rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .read-more-btn {
+            color: var(--primary-color);
+            background: none;
+            border: none;
+            padding: 0;
+            font-size: 0.875rem;
+            cursor: pointer;
+            text-decoration: underline;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+
+        .donate-btn {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            font-weight: 700;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: transform 0.2s;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 0.5rem;
+        }
+
+        .donate-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+        }
+
+        /* Lightbox Styles */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            backdrop-filter: blur(5px);
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .lightbox.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .lightbox-content {
+            background: #1e293b;
+            padding: 2.5rem;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .lightbox.active .lightbox-content {
+            transform: scale(1);
+        }
+
+        .close-lightbox {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .lightbox-bio {
+            text-align: left;
+            margin: 1.5rem 0;
+            color: #cbd5e1;
+            line-height: 1.7;
+        }
     </style>
 </head>
 
 <body>
     <script src="js/navigation.js"></script>
 
-    <div class="container" style="padding-top: 2rem;">
-
+    <main class="container">
         <div class="tools-grid">
+            <!-- Author Card (First Item) -->
+            <div class="tool-card author-card">
+                <div>
+                    <img src="assets/Author.jpg" alt="Tobiloba" class="author-img">
+                    <h3 class="tool-title">About the Creator</h3>
+                    <div class="author-bio">
+                        I am Tobiloba, a Post Silicon Validation Engineer with Interest in Investment. I created these
+                        tools to help me analyze bonds for fun. You can say Hi to me on <a
+                            href="https://www.linkedin.com/in/balogun-tobi">LinkedIn</a> if you find this
+                        useful. With your donations we can create more tools.
+                    </div>
+                    <button class="read-more-btn" onclick="openLightbox()">Read More</button>
+                </div>
+                <div style="margin-top: auto;">
+                    <a href="https://www.paypal.com/paypalme/TOBILOBABALOGUN" target="_blank"
+                        class="donate-btn">Donate</a>
+                </div>
+            </div>
             <a href="Bond-Analysis-Flowchart.html" class="tool-card">
                 <div>
                     <div class="tool-icon">📊</div>
@@ -323,8 +575,48 @@
             </div>
         </div>
         <div style="height: 100px;"></div>
-    </div>
-    <script src="js/footer.js"></script>
+        </div>
+        <!-- Lightbox Modal -->
+        <div id="authorLightbox" class="lightbox">
+            <div class="lightbox-content">
+                <button class="close-lightbox" onclick="closeLightbox()">&times;</button>
+                <img src="assets/Author.jpg" alt="Tobiloba" class="author-img" style="width: 100px; height: 100px;">
+                <h3 style="color: white; margin-bottom: 0.5rem;">About the Author</h3>
+                <div class="lightbox-bio">
+                    <p>I am Tobiloba, a Post Silicon Validation Engineer with Interest in Investment.</p>
+                    <p>I created these tools to help me analyze bonds for fun.</p>
+                    <p>You can say Hi to me on Linkedin if you find this useful.</p>
+                    <p>With your donations we can create more tools.</p>
+                </div>
+                <a href="https://www.paypal.com/paypalme/TOBILOBABALOGUN" target="_blank" class="donate-btn">Donate with
+                    PayPal</a>
+            </div>
+        </div>
+
+        <script src="js/footer.js"></script>
+        <script>
+            function openLightbox() {
+                document.getElementById('authorLightbox').classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeLightbox() {
+                document.getElementById('authorLightbox').classList.remove('active');
+                document.body.style.overflow = '';
+            }
+
+            // Close on background click
+            document.getElementById('authorLightbox').addEventListener('click', (e) => {
+                if (e.target === document.getElementById('authorLightbox')) {
+                    closeLightbox();
+                }
+            });
+
+            // Close on Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') closeLightbox();
+            });
+        </script>
 </body>
 
 </html>
