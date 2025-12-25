@@ -12,7 +12,7 @@
 
 ## 🚀 Live Demo
 
-[View Live Demo](https://www.bondmetrics.pro/Bond-Analysis-Tools-Hub.html)
+[View Live Demo](https://www.bondmetrics.pro)
 
 ---
 
