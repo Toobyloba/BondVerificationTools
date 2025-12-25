@@ -1,5 +1,8 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
+const authService = require('./services/auth');
+const analyticsService = require('./services/analytics');
 const { solveYTM, calculateDuration, calculateFairPrice } = require('./services/bond-math');
 
 const app = express();
@@ -7,11 +10,56 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Log all incoming requests
 app.use((req, res, next) => {
-    console.log(`[${new Date().toLocaleTimeString()}] ${req.method} ${req.url}`);
+    console.log(`[${new Date().toLocaleTimeString()}] ${req.method} ${req.url} `);
     next();
+});
+
+// 1. Analytics Middleware (Global for HTML pages)
+app.use(analyticsService.track);
+
+// 2. Auth Routes
+app.post('/api/auth/login', (req, res) => {
+    const { username, password } = req.body;
+    const token = authService.login(username, password);
+    if (token) {
+        res.json({ token });
+    } else {
+        res.status(401).json({ error: 'Invalid credentials' });
+    }
+});
+
+app.post('/api/auth/register', (req, res) => {
+    // Optional: Protect this route so only logged-in admins can create users
+    // const token = req.headers['authorization']?.split(' ')[1];
+    // if (!authService.verifyToken(token)) return res.sendStatus(403);
+
+    const { username, password } = req.body;
+    try {
+        const token = req.headers['authorization']?.split(' ')[1]; // Pass token if we decide to lock it
+        authService.register(username, password, token);
+        res.json({ success: true });
+    } catch (e) {
+        res.status(400).json({ error: e.message });
+    }
+});
+
+app.get('/api/auth/check', authService.authenticate, (req, res) => {
+    res.json({ valid: true, user: req.user });
+});
+
+// 3. Analytics API (Protected)
+app.get('/api/analytics/stats', authService.authenticate, (req, res) => {
+    res.json(analyticsService.getStats());
+});
+
+app.post('/api/analytics/event', (req, res) => {
+    const { type } = req.body;
+    analyticsService.trackEvent(type);
+    res.json({ success: true });
 });
 
 /**
@@ -66,15 +114,15 @@ app.post('/api/v1/calculate/screener', (req, res) => {
         const liquidityPass = vol >= 1;
 
         const checkpoints = {
-            cy: { passed: true, value: CY, detail: `CY = ${(CY * 100).toFixed(2)}%` },
-            ytm: { passed: YTM > 0, value: YTM, detail: `YTM = ${(YTM * 100).toFixed(2)}%` },
-            ry: { passed: RY > 0.015, value: RY, detail: `RY = ${(RY * 100).toFixed(2)}% (Threshold: >1.5%)` },
-            duration: { passed: D < durationThreshold, value: D, detail: `Duration = ${D.toFixed(2)} yrs (Threshold: <${durationThreshold.toFixed(1)})` },
-            holdingPeriod: { passed: D <= hp, value: hp, detail: `Holding Period (${hp} yrs) vs Duration (${D.toFixed(2)} yrs)` },
+            cy: { passed: true, value: CY, detail: `CY = ${(CY * 100).toFixed(2)}% ` },
+            ytm: { passed: YTM > 0, value: YTM, detail: `YTM = ${(YTM * 100).toFixed(2)}% ` },
+            ry: { passed: RY > 0.015, value: RY, detail: `RY = ${(RY * 100).toFixed(2)}% (Threshold: > 1.5 %)` },
+            duration: { passed: D < durationThreshold, value: D, detail: `Duration = ${D.toFixed(2)} yrs(Threshold: <${durationThreshold.toFixed(1)})` },
+            holdingPeriod: { passed: D <= hp, value: hp, detail: `Holding Period(${hp} yrs) vs Duration(${D.toFixed(2)} yrs)` },
             creditSpread: { passed: spread > minSpreadThreshold, value: spread, detail: `Spread = ${(spread * 100).toFixed(2)}% (Needed for ${bondRating}: ${(minSpreadThreshold * 100).toFixed(1)}%)` },
-            currencyRisk: { passed: realReturnHomeC > 0, value: realReturnHomeC, detail: `Real Return (Home) = ${(realReturnHomeC * 100).toFixed(2)}%` },
+            currencyRisk: { passed: realReturnHomeC > 0, value: realReturnHomeC, detail: `Real Return(Home) = ${(realReturnHomeC * 100).toFixed(2)}% ` },
             callability: { passed: callabilityPass, value: isCallable, detail: isCallable ? 'Bond is callable' : 'Not callable' },
-            liquidity: { passed: liquidityPass, value: vol, detail: `Daily Volume = $${vol.toFixed(1)}M` }
+            liquidity: { passed: liquidityPass, value: vol, detail: `Daily Volume = $${vol.toFixed(1)} M` }
         };
 
         const allPass = Object.values(checkpoints).every(cp => cp.passed);
@@ -308,12 +356,12 @@ app.post('/api/v1/calculate/complete', (req, res) => {
         const liqPass = vol >= 1;
 
         const results = {
-            realYield: { passed: ryPass, value: realYield, detail: `RY = ${(realYield * 100).toFixed(2)}%` },
+            realYield: { passed: ryPass, value: realYield, detail: `RY = ${(realYield * 100).toFixed(2)}% ` },
             spread: { passed: spreadPass, value: spread, detail: `Spread = ${(spread * 100).toFixed(2)}% (Target for ${bondRating}: ${(minSpread * 100).toFixed(1)}%)` },
             duration: { passed: durationPass, value: d, detail: `Duration = ${d.toFixed(2)} yrs vs HP = ${hp} yrs` },
-            homeReturn: { passed: homePass, value: homeReturn, detail: `Real Home Return = ${(homeReturn * 100).toFixed(2)}%` },
+            homeReturn: { passed: homePass, value: homeReturn, detail: `Real Home Return = ${(homeReturn * 100).toFixed(2)}% ` },
             callability: { passed: callPass, value: isCallable, detail: isCallable ? 'Callable' : 'Non-Callable' },
-            liquidity: { passed: liqPass, value: vol, detail: `Volume = $${vol.toFixed(1)}M` }
+            liquidity: { passed: liqPass, value: vol, detail: `Volume = $${vol.toFixed(1)} M` }
         };
 
         const allPass = Object.values(results).every(r => r.passed);
@@ -398,5 +446,5 @@ app.post('/api/v1/calculate/flowchart', (req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`Bond Analysis Server running on port ${PORT}`);
+    console.log(`Bond Analysis Server running on port ${PORT} `);
 });

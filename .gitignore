@@ -23,3 +23,8 @@
 /app/Config/core.php
 /app/Config/database.php
 /vendors/*
+
+# BondMetrics Pro
+node_modules/
+server/data/*.json
+server/setup-admin.js

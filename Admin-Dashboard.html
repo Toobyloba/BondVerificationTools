@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BondMetrics Pro - Analytics Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/global.css">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            padding-top: 0;
+            /* Override global padding if needed */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .dashboard-nav {
+            background: #1e293b;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+        }
+
+        .nav-brand span {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .user-info {
+            color: #94a3b8;
+            font-size: 0.875rem;
+        }
+
+        .btn-logout {
+            background: none;
+            border: 1px solid #ef4444;
+            color: #ef4444;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .btn-logout:hover {
+            background: #ef4444;
+            color: white;
+        }
+
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            width: 100%;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: #1e293b;
+            padding: 1.5rem;
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .stat-label {
+            color: #94a3b8;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            color: white;
+            font-size: 1.875rem;
+            font-weight: 700;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: #1e293b;
+            padding: 1.5rem;
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            min-height: 300px;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-title {
+            color: white;
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        /* Add User Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: #1e293b;
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="dashboard-nav">
+        <a href="#" class="nav-brand"><span>BondMetrics</span> Analytics</a>
+        <div class="user-menu">
+            <span class="user-info" id="currentUser">Admin</span>
+            <button class="btn-primary" onclick="openAddUserModal()"
+                style="font-size: 0.875rem; padding: 0.5rem 1rem;">+ Add User</button>
+            <button class="btn-logout" onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <!-- Summary Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Total Visits</div>
+                <div class="stat-value" id="valTotalVisits">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Unique Humans</div>
+                <div class="stat-value" id="valHumans">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Bot Traffic</div>
+                <div class="stat-value" id="valBots" style="color: #94a3b8;">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Calculations Run</div>
+                <div class="stat-value" id="valCalculations" style="color: #3b82f6;">-</div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="charts-grid">
+            <!-- Tool Popularity -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3 class="chart-title">Tool Popularity</h3>
+                </div>
+                <canvas id="pageViewsChart"></canvas>
+            </div>
+
+            <!-- Bot vs Human -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3 class="chart-title">Traffic Composition</h3>
+                </div>
+                <canvas id="trafficTypeChart"></canvas>
+            </div>
+
+            <!-- Hourly Traffic -->
+            <div class="chart-card" style="grid-column: 1 / -1;">
+                <div class="chart-header">
+                    <h3 class="chart-title">Hourly Traffic (UTC)</h3>
+                </div>
+                <canvas id="hourlyChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add User Modal -->
+    <div id="addUserModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeAddUserModal()">&times;</span>
+            <h3 style="color: white; margin-bottom: 1.5rem;">Add New Admin</h3>
+            <form id="addUserForm">
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; color: #cbd5e1; margin-bottom: 0.5rem;">Username</label>
+                    <input type="text" id="newUsername" class="form-input"
+                        style="width: 100%; padding: 0.75rem; background: #0f172a; border: 1px solid #334155; color: white;"
+                        required>
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; color: #cbd5e1; margin-bottom: 0.5rem;">Password</label>
+                    <input type="password" id="newPassword" class="form-input"
+                        style="width: 100%; padding: 0.75rem; background: #0f172a; border: 1px solid #334155; color: white;"
+                        required>
+                </div>
+                <button type="submit" class="btn-primary" style="width: 100%; padding: 0.75rem;">Create User</button>
+                <p id="addUserMsg" style="margin-top: 1rem; text-align: center; color: #10b981; display: none;"></p>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+        const token = localStorage.getItem('bmp_auth_token');
+        const username = localStorage.getItem('bmp_user');
+
+        // 1. Auth Check
+        if (!token) {
+            window.location.href = 'Admin-Login.html';
+        }
+        document.getElementById('currentUser').textContent = username || 'Admin';
+
+        // 2. Logout
+        function logout() {
+            localStorage.removeItem('bmp_auth_token');
+            localStorage.removeItem('bmp_user');
+            window.location.href = 'Admin-Login.html';
+        }
+
+        // 3. Fetch Data
+        async function fetchStats() {
+            try {
+                const response = await fetch(`${API_URL}/analytics/stats`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.status === 401 || response.status === 403) {
+                    logout();
+                    return;
+                }
+
+                const data = await response.json();
+                updateDashboard(data);
+            } catch (e) {
+                console.error("Error fetching stats:", e);
+            }
+        }
+
+        // 4. Update UI
+        function updateDashboard(data) {
+            // Cards
+            document.getElementById('valTotalVisits').textContent = data.total_visits.toLocaleString();
+            document.getElementById('valHumans').textContent = data.humans.toLocaleString();
+            document.getElementById('valBots').textContent = data.bots.toLocaleString();
+            document.getElementById('valCalculations').textContent = (data.calculation_events || 0).toLocaleString();
+
+            // Charts
+            renderPageViewsChart(data.page_views);
+            renderTrafficChart(data.humans, data.bots);
+            renderHourlyChart(data.hourly_stats);
+        }
+
+        // Chart Configurations
+        Chart.defaults.color = '#94a3b8';
+        Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.1)';
+
+        function renderPageViewsChart(pageViews) {
+            const ctx = document.getElementById('pageViewsChart').getContext('2d');
+
+            // Clean labels
+            const labels = Object.keys(pageViews).map(p => p.replace('.html', '').replace('Bond-', ''));
+            const values = Object.values(pageViews);
+
+            if (window.pageViewsChartInstance) window.pageViewsChartInstance.destroy();
+
+            window.pageViewsChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Visits',
+                        data: values,
+                        backgroundColor: '#3b82f6',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+        }
+
+        function renderTrafficChart(humans, bots) {
+            const ctx = document.getElementById('trafficTypeChart').getContext('2d');
+
+            if (window.trafficChartInstance) window.trafficChartInstance.destroy();
+
+            window.trafficChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Humans', 'Bots'],
+                    datasets: [{
+                        data: [humans, bots],
+                        backgroundColor: ['#10b981', '#64748b'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+        }
+
+        function renderHourlyChart(hourlyData) {
+            const ctx = document.getElementById('hourlyChart').getContext('2d');
+            const labels = Array.from({ length: 24 }, (_, i) => `${i}:00`);
+
+            if (window.hourlyChartInstance) window.hourlyChartInstance.destroy();
+
+            window.hourlyChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Visits',
+                        data: hourlyData,
+                        borderColor: '#8b5cf6',
+                        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+        }
+
+        // 5. User Management Modal
+        function openAddUserModal() {
+            document.getElementById('addUserModal').style.display = 'flex';
+        }
+
+        function closeAddUserModal() {
+            document.getElementById('addUserModal').style.display = 'none';
+        }
+
+        document.getElementById('addUserForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('newUsername').value;
+            const password = document.getElementById('newPassword').value;
+            const msg = document.getElementById('addUserMsg');
+
+            try {
+                const response = await fetch(`${API_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    msg.textContent = 'User created successfully!';
+                    msg.style.color = '#10b981';
+                    msg.style.display = 'block';
+                    setTimeout(closeAddUserModal, 1500);
+                } else {
+                    msg.textContent = data.error || 'Failed to create user';
+                    msg.style.color = '#ef4444';
+                    msg.style.display = 'block';
+                }
+            } catch (e) {
+                msg.textContent = 'Connection error';
+                msg.style.display = 'block';
+            }
+        });
+
+        // Initialize
+        fetchStats();
+        // Refresh every 30s
+        setInterval(fetchStats, 30000);
+
+    </script>
+</body>
+
+</html>
