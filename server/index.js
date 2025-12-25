@@ -21,6 +21,14 @@ app.use((req, res, next) => {
 // 1. Analytics Middleware (Global for HTML pages)
 app.use(analyticsService.track);
 
+// Serve static frontend files (CSS, JS, HTML) from parent directory
+app.use(express.static(path.join(__dirname, '../')));
+
+// Default Route -> Hub Page
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '../Bond-Analysis-Tools-Hub.html'));
+});
+
 // 2. Auth Routes
 app.post('/api/auth/login', (req, res) => {
     const { username, password } = req.body;
