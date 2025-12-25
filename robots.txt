@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://bondmetricspro.com/sitemap.xml
