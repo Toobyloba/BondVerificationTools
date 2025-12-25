@@ -1,332 +1,190 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bond Analysis Flowchart</title>
+    <title>Analysis Flowchart - Sequential Veto Gates</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/global.css">
     <style>
-        :root {
-            --color-primary: #208091;
-            --color-success: #2db566;
-            --color-warning: #f59e0b;
-            --color-error: #e84444;
-            --color-bg: #f8f8f6;
-            --color-surface: #fff;
-            --color-text: #1a1a19;
-            --color-text-secondary: #666;
-            --color-border: #e0e0dd;
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background-color: var(--color-bg);
-            color: var(--color-text);
-            margin: 0;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        header {
-            margin-bottom: 32px;
-            border-bottom: 2px solid var(--color-border);
-            padding-bottom: 16px;
-        }
-
-        h1 {
-            margin: 0 0 8px 0;
-            font-size: 28px;
-            font-weight: 600;
-        }
-
-        .subtitle {
-            color: var(--color-text-secondary);
-            font-size: 14px;
-            margin: 0;
-        }
-
-        .input-section {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        @media (max-width: 1024px) {
-            .input-section {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .input-section {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .card {
-            background: var(--color-surface);
-            border: 1px solid var(--color-border);
-            border-radius: 8px;
-            padding: 20px;
-        }
-
-        .card-title {
-            font-size: 14px;
-            font-weight: 600;
-            text-transform: uppercase;
-            color: var(--color-text-secondary);
-            margin: 0 0 16px 0;
-            letter-spacing: 0.5px;
-        }
-
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        label {
-            display: block;
-            font-size: 13px;
-            font-weight: 500;
-            margin-bottom: 6px;
-            color: var(--color-text);
-        }
-
-        input, select {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid var(--color-border);
-            border-radius: 6px;
-            font-size: 14px;
-            background: var(--color-surface);
-            color: var(--color-text);
-        }
-
-        input:focus, select:focus {
-            outline: none;
-            border-color: var(--color-primary);
-            box-shadow: 0 0 0 2px rgba(32, 128, 145, 0.1);
-        }
-
-        button {
-            background: var(--color-primary);
+        .page-header {
+            background: linear-gradient(135deg, #4338ca 0%, #6366f1 100%);
             color: white;
-            border: none;
-            padding: 14px;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background 150ms;
-            width: 100%;
-            margin-top: 24px;
+            padding: 3rem 0;
+            margin-bottom: 3rem;
+            border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+            text-align: center;
         }
 
-        button:hover {
-            background: #1a6a78;
+        .phase-step {
+            position: relative;
+            padding-bottom: 3rem;
         }
 
-        button:active {
-            background: #155a68;
+        .phase-step::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 40px;
+            bottom: 0;
+            width: 2px;
+            background: var(--border);
+            z-index: 0;
         }
 
-        .flowchart {
-            margin-top: 32px;
+        .phase-step:last-child::before {
+            display: none;
         }
 
-        .phase {
-            margin-bottom: 32px;
-        }
-
-        .phase-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--color-primary);
-            margin-bottom: 12px;
-            padding-bottom: 8px;
-            border-bottom: 2px solid var(--color-border);
-        }
-
-        .gate-box {
-            background: var(--color-surface);
-            border: 2px solid var(--color-border);
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 12px;
-        }
-
-        .gate-box.locked {
-            opacity: 0.5;
-            background: #f5f5f5;
-        }
-
-        .gate-box.pass {
-            border-color: var(--color-success);
-            background: rgba(45, 181, 102, 0.05);
-        }
-
-        .gate-box.fail {
-            border-color: var(--color-error);
-            background: rgba(232, 68, 68, 0.05);
-        }
-
-        .gate-box.caution {
-            border-color: var(--color-warning);
-            background: rgba(245, 158, 11, 0.05);
-        }
-
-        .gate-header {
-            font-weight: 600;
-            font-size: 15px;
-            margin-bottom: 8px;
+        .phase-indicator {
+            position: relative;
+            z-index: 1;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
         }
 
-        .gate-icon {
-            font-size: 18px;
-            min-width: 24px;
-        }
-
-        .gate-detail {
-            font-size: 13px;
-            color: var(--color-text-secondary);
-            line-height: 1.6;
-            margin-top: 8px;
-        }
-
-        .final-decision {
-            margin-top: 32px;
-            padding: 32px;
-            border-radius: 8px;
-            text-align: center;
-            border: 3px solid var(--color-border);
-        }
-
-        .final-decision.execute {
-            border-color: var(--color-success);
-            background: rgba(45, 181, 102, 0.05);
-        }
-
-        .final-decision.execute-caution {
-            border-color: var(--color-warning);
-            background: rgba(245, 158, 11, 0.05);
-        }
-
-        .final-decision.stop {
-            border-color: var(--color-error);
-            background: rgba(232, 68, 68, 0.05);
-        }
-
-        .decision-icon {
-            font-size: 48px;
-            margin-bottom: 12px;
-        }
-
-        .decision-title {
-            font-size: 32px;
+        .phase-circle {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-weight: 700;
-            margin: 0 0 8px 0;
+            color: var(--text-muted);
+            transition: var(--transition);
         }
 
-        .final-decision.execute .decision-title {
-            color: var(--color-success);
+        .phase-step.active .phase-circle {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
         }
 
-        .final-decision.execute-caution .decision-title {
-            color: var(--color-warning);
+        .gate-card {
+            margin-left: 3.5rem;
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            margin-bottom: 1rem;
+            transition: var(--transition);
         }
 
-        .final-decision.stop .decision-title {
-            color: var(--color-error);
+        .gate-card.locked {
+            opacity: 0.5;
+            background: #f8fafc;
         }
 
-        .decision-subtitle {
-            font-size: 14px;
-            color: var(--color-text-secondary);
-            margin: 0;
+        .gate-card.pass {
+            border-left: 6px solid var(--success);
         }
 
-        .arrow {
+        .gate-card.fail {
+            border-left: 6px solid var(--error);
+        }
+
+        .gate-card.caution {
+            border-left: 6px solid var(--warning);
+        }
+
+        .gate-meta {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            padding-top: 0.5rem;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .stop-sign {
+            margin-left: 3.5rem;
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+            padding: 1rem;
+            border-radius: 12px;
+            font-weight: 700;
             text-align: center;
-            font-size: 20px;
-            color: var(--color-text-secondary);
-            margin: 8px 0;
+            border: 1px dashed #ef4444;
         }
 
-        .error-message {
-            background: rgba(232, 68, 68, 0.1);
-            color: var(--color-error);
-            padding: 12px;
-            border-radius: 6px;
-            font-size: 13px;
-            margin-bottom: 16px;
-            border-left: 4px solid var(--color-error);
+        .decision-hero {
+            padding: 3rem;
+            border-radius: var(--radius-lg);
+            text-align: center;
+            color: white;
+            margin-top: 2rem;
         }
 
-        .stop-message {
-            color: var(--color-error);
-            font-weight: 600;
-            margin-top: 12px;
+        .decision-hero.EXECUTE {
+            background: var(--success);
+        }
+
+        .decision-hero.EXECUTE-CAUTION {
+            background: var(--warning);
+        }
+
+        .decision-hero.STOP {
+            background: var(--error);
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <header>
-            <h1>Bond Analysis Flowchart</h1>
-            <p class="subtitle">Sequential Veto-Gate Framework: 4 Phases of Critical Gates</p>
-        </header>
 
-        <div class="input-section">
+<body>
+    <div class="page-header">
+        <div class="container">
+            <h1 style="color: white; margin-bottom: 0.5rem;">Analysis Flowchart</h1>
+            <p style="opacity: 0.9;">Sequential Veto-Gate Framework</p>
+        </div>
+    </div>
+
+    <div class="container" style="padding-top: 0;">
+        <div class="grid grid-cols-3">
             <div class="card">
                 <h3 class="card-title">Bond Details</h3>
                 <div class="form-group">
-                    <label>Bond Price (Market) - $</label>
-                    <input type="number" id="bondPrice" value="950" min="1" step="10">
+                    <label>Market Price - $</label>
+                    <input type="number" id="bondPrice" value="950">
                 </div>
                 <div class="form-group">
                     <label>Face Value - $</label>
-                    <input type="number" id="faceValue" value="1000" min="1" step="100">
+                    <input type="number" id="faceValue" value="1000">
                 </div>
                 <div class="form-group">
                     <label>Coupon Rate - %</label>
-                    <input type="number" id="couponRate" value="5" min="0" step="0.1">
+                    <input type="number" id="couponRate" value="5">
                 </div>
                 <div class="form-group">
-                    <label>Years to Maturity</label>
-                    <input type="number" id="yearsToMaturity" value="10" min="0.1" step="0.1">
+                    <label>Maturity (yrs)</label>
+                    <input type="number" id="yearsToMaturity" value="10">
                 </div>
             </div>
 
             <div class="card">
-                <h3 class="card-title">Market Context</h3>
+                <h3 class="card-title">Economic Context</h3>
                 <div class="form-group">
-                    <label>Your Required Yield - %</label>
-                    <input type="number" id="requiredYield" value="5.5" min="0" step="0.1">
+                    <label>Required Yield - %</label>
+                    <input type="number" id="requiredYield" value="5.5">
                 </div>
                 <div class="form-group">
-                    <label>Credit Spread (vs Risk-Free) - %</label>
-                    <input type="number" id="creditSpread" value="1.5" min="0" step="0.1">
+                    <label>Credit Spread - %</label>
+                    <input type="number" id="creditSpread" value="1.5">
                 </div>
                 <div class="form-group">
                     <label>Coupon Type</label>
                     <select id="couponType">
-                        <option value="fixed" selected>Fixed</option>
-                        <option value="floating">Floating</option>
-                        <option value="zero">Zero-Coupon</option>
+                        <option value="fixed">Fixed Rate</option>
+                        <option value="floating">Floating Rate</option>
+                        <option value="zero">Zero Coupon</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Credit Rating</label>
+                    <label>Rating</label>
                     <select id="creditRating">
                         <option>AAA</option>
                         <option>AA</option>
@@ -339,256 +197,167 @@
             </div>
 
             <div class="card">
-                <h3 class="card-title">Risk Factors</h3>
-                <div class="form-group">
-                    <label>Is Bond Callable?</label>
-                    <select id="isCallable">
-                        <option value="false" selected>No</option>
-                        <option value="true">Yes</option>
-                    </select>
-                </div>
+                <h3 class="card-title">Risk Flags</h3>
                 <div class="form-group">
                     <label>Rate Outlook</label>
                     <select id="rateOutlook">
-                        <option value="rising">Rising Rates</option>
-                        <option value="stable" selected>Stable</option>
                         <option value="falling">Falling Rates</option>
+                        <option value="stable" selected>Neutral</option>
+                        <option value="rising">Rising Rates</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label>Duration Match</label>
                     <select id="durationMatch">
-                        <option value="good" selected>Good Match</option>
-                        <option value="moderate">Moderate</option>
-                        <option value="poor">Poor Match</option>
+                        <option value="good" selected>Aligned</option>
+                        <option value="moderate">Neutral</option>
+                        <option value="poor">Misaligned</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label>Liquidity</label>
                     <select id="liquidity">
-                        <option value="high" selected>High</option>
+                        <option value="high" selected>High (Liquid)</option>
                         <option value="moderate">Moderate</option>
-                        <option value="low">Low</option>
+                        <option value="low">Low (Illiquid)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Is Callable?</label>
+                    <select id="isCallable">
+                        <option value="false">No</option>
+                        <option value="true">Yes</option>
                     </select>
                 </div>
             </div>
         </div>
 
-        <button onclick="analyzeFlowchart()">Run Flowchart Analysis</button>
+        <button onclick="analyzeFlowchart()" class="btn btn-primary"
+            style="margin-top: 2rem; width: 100%; height: 60px; font-size: 1.125rem;">
+            Run Sequential Veto Audit
+        </button>
 
         <div id="errorContainer"></div>
-        <div id="flowchartResults" style="display: none;">
-            <div class="flowchart">
-                <div id="phase1"></div>
-                <div id="phase2"></div>
-                <div id="phase3"></div>
-                <div id="phase4"></div>
-            </div>
+
+        <div class="results-section" id="flowchartResults" style="display: none; max-width: 800px; margin: 4rem auto;">
+            <div id="phase1" class="phase-step active"></div>
+            <div id="phase2" class="phase-step"></div>
+            <div id="phase3" class="phase-step"></div>
+            <div id="phase4"></div>
         </div>
+
+        <div style="height: 100px;"></div>
     </div>
 
+    <script src="js/api-client.js"></script>
     <script>
-        function calculateFairPrice(faceValue, couponRate, requiredYield, yearsToMaturity) {
-            const N = yearsToMaturity * 2;
-            const y = requiredYield / 2;
-            const C = (faceValue * couponRate) / 2;
-            let fairPrice = 0;
-
-            for (let t = 1; t <= N; t++) {
-                fairPrice += C / Math.pow(1 + y, t);
-            }
-            fairPrice += faceValue / Math.pow(1 + y, N);
-            return fairPrice;
-        }
-
-        function analyzeFlowchart() {
+        async function analyzeFlowchart() {
+            const resultsSection = document.getElementById('flowchartResults');
             const errorContainer = document.getElementById('errorContainer');
-            const resultsDiv = document.getElementById('flowchartResults');
+            const btn = document.querySelector('button[onclick="analyzeFlowchart()"]');
+
             errorContainer.innerHTML = '';
+            btn.disabled = true;
+            btn.innerHTML = '<span>Triage in Progress...</span>';
 
             try {
-                const bondPrice = parseFloat(document.getElementById('bondPrice').value);
-                const faceValue = parseFloat(document.getElementById('faceValue').value);
-                const couponRate = parseFloat(document.getElementById('couponRate').value) / 100;
-                const yearsToMaturity = parseFloat(document.getElementById('yearsToMaturity').value);
-                const requiredYield = parseFloat(document.getElementById('requiredYield').value) / 100;
-                const creditSpread = parseFloat(document.getElementById('creditSpread').value) / 100;
-                const couponType = document.getElementById('couponType').value;
-                const isCallable = document.getElementById('isCallable').value === 'true';
-                const rateOutlook = document.getElementById('rateOutlook').value;
-                const durationMatch = document.getElementById('durationMatch').value;
+                const data = {
+                    bondPrice: parseFloat(document.getElementById('bondPrice').value),
+                    faceValue: parseFloat(document.getElementById('faceValue').value),
+                    couponRate: parseFloat(document.getElementById('couponRate').value),
+                    yearsToMaturity: parseFloat(document.getElementById('yearsToMaturity').value),
+                    requiredYield: parseFloat(document.getElementById('requiredYield').value),
+                    creditSpread: parseFloat(document.getElementById('creditSpread').value),
+                    couponType: document.getElementById('couponType').value,
+                    isCallable: document.getElementById('isCallable').value === 'true',
+                    rateOutlook: document.getElementById('rateOutlook').value,
+                    durationMatch: document.getElementById('durationMatch').value
+                };
 
-                if (bondPrice <= 0 || faceValue <= 0 || yearsToMaturity <= 0) {
-                    throw new Error('All inputs must be positive.');
-                }
+                const result = await BondAPI.evaluateFlowchart(data);
+                const { metrics, gates, decision, riskFlags } = result;
 
-                const fairPrice = calculateFairPrice(faceValue, couponRate, requiredYield, yearsToMaturity);
-                const priceVsFair = ((bondPrice - fairPrice) / fairPrice) * 100;
-                const isCheap = bondPrice < fairPrice;
-                const currentYield = (faceValue * couponRate / bondPrice) * 100;
-                const realYield = requiredYield - 0.025;
+                // Phase 1: Fair Price
+                let html1 = `
+                    <div class="phase-indicator">
+                        <div class="phase-circle">1</div>
+                        <h3 style="margin: 0;">Fair Price Gates</h3>
+                    </div>
+                    <div class="gate-card ${gates.gate1aStatus}">
+                        <div style="font-weight: 700;">Market vs Fair Price</div>
+                        <div class="gate-meta">Market: $${data.bondPrice.toFixed(2)} | Fair: $${metrics.fairPrice.toFixed(2)}</div>
+                    </div>
+                    <div class="gate-card ${gates.gate1bStatus}">
+                        <div style="font-weight: 700;">Credit Spread Integrity</div>
+                        <div class="gate-meta">Spread: ${data.creditSpread.toFixed(2)}% (Target: >1.00%)</div>
+                    </div>
+                `;
+                if (!gates.phase1Pass) html1 += `<div class="stop-sign animate-fade-in">⏹️ VETO: Phase 1 Fail. Stop Analysis.</div>`;
+                document.getElementById('phase1').innerHTML = html1;
 
-                // PHASE 1: Fair Price
-                const gate1aStatus = isCheap ? 'pass' : 'fail';
-                const gate1bStatus = creditSpread >= 0.01 ? 'pass' : 'fail';
-                const phase1Pass = (gate1aStatus === 'pass') && (gate1bStatus === 'pass');
+                // Phase 2: Real Money
+                const p2Status = gates.phase1Pass ? 'active' : '';
+                document.getElementById('phase2').className = `phase-step ${p2Status}`;
+                let html2 = `
+                    <div class="phase-indicator">
+                        <div class="phase-circle">2</div>
+                        <h3 style="margin: 0;">Real Money Gates</h3>
+                    </div>
+                    <div class="gate-card ${!gates.phase1Pass ? 'locked' : gates.gate2aStatus}">
+                        <div style="font-weight: 700;">Real Yield Protection</div>
+                        <div class="gate-meta">Inflation-Adjusted Return: ${(metrics.realYield * 100).toFixed(2)}%</div>
+                    </div>
+                    <div class="gate-card ${!gates.phase1Pass ? 'locked' : gates.gate2bStatus}">
+                        <div style="font-weight: 700;">Income Target Alignment</div>
+                        <div class="gate-meta">Current Yield: ${metrics.currentYield.toFixed(2)}% vs ${data.requiredYield}%</div>
+                    </div>
+                `;
+                if (gates.phase1Pass && !gates.phase2Pass) html2 += `<div class="stop-sign animate-fade-in">⏹️ VETO: Phase 2 Fail. Stop Analysis.</div>`;
+                document.getElementById('phase2').innerHTML = html2;
 
-                let phase1HTML = `
-                    <div class="phase">
-                        <div class="phase-title">PHASE 1: Fair Price Gates (CRITICAL)</div>
-                        <div class="gate-box ${gate1aStatus}">
-                            <div class="gate-header">
-                                <span class="gate-icon">${gate1aStatus === 'pass' ? '✅' : '❌'}</span>
-                                Gate 1a: Market Price ≤ Fair Price?
-                            </div>
-                            <div class="gate-detail">
-                                Market Price: $${bondPrice.toFixed(2)}<br>
-                                Fair Price: $${fairPrice.toFixed(2)}<br>
-                                ${isCheap ? `Discount: ${Math.abs(priceVsFair).toFixed(2)}% ✓ PASS` : `Premium: ${priceVsFair.toFixed(2)}% ✗ FAIL - Bond Overvalued`}
-                            </div>
-                        </div>
-                        <div class="gate-box ${gate1bStatus}">
-                            <div class="gate-header">
-                                <span class="gate-icon">${gate1bStatus === 'pass' ? '✅' : '❌'}</span>
-                                Gate 1b: Credit Spread ≥ 1%?
-                            </div>
-                            <div class="gate-detail">
-                                Credit Spread: ${(creditSpread * 100).toFixed(2)}%<br>
-                                ${creditSpread >= 0.01 ? `Adequate compensation for credit risk ✓ PASS` : `Insufficient spread for default risk ✗ FAIL`}
-                            </div>
-                        </div>
-                        ${!phase1Pass ? '<div class="stop-message">⏹️ STOP: Phase 1 gates failed. Do not proceed.</div>' : '<div class="arrow">↓</div>'}
+                // Phase 3: Risk Filters
+                const p3Status = (gates.phase1Pass && gates.phase2Pass) ? 'active' : '';
+                document.getElementById('phase3').className = `phase-step ${p3Status}`;
+                document.getElementById('phase3').innerHTML = `
+                    <div class="phase-indicator">
+                        <div class="phase-circle">3</div>
+                        <h3 style="margin: 0;">Risk Filter Gates</h3>
+                    </div>
+                    <div class="gate-card ${!p3Status ? 'locked' : gates.gate3aStatus}">
+                        <div style="font-weight: 700;">Interest Rate Mismatch</div>
+                        <div class="gate-meta">Type: ${data.couponType} | Outlook: ${data.rateOutlook}</div>
+                    </div>
+                    <div class="gate-card ${!p3Status ? 'locked' : gates.gate3bStatus}">
+                        <div style="font-weight: 700;">Duration Alignment</div>
+                        <div class="gate-meta">Match Quality: ${data.durationMatch}</div>
+                    </div>
+                    <div class="gate-card ${!p3Status ? 'locked' : gates.gate3cStatus}">
+                        <div style="font-weight: 700;">Callability Exposure</div>
+                        <div class="gate-meta">Callable: ${data.isCallable}</div>
                     </div>
                 `;
 
-                // PHASE 2: Real Money
-                const phase2Locked = !phase1Pass;
-                const gate2aStatus = realYield >= 0 ? 'pass' : 'fail';
-                const gate2bStatus = currentYield >= (requiredYield * 100) ? 'pass' : 'caution';
-                const phase2Pass = (gate2aStatus === 'pass') && (gate2bStatus !== 'fail');
-
-                let phase2HTML = `
-                    <div class="phase ${phase2Locked ? 'locked' : ''}">
-                        <div class="phase-title">PHASE 2: Real Money Gates (CRITICAL)</div>
-                        <div class="gate-box ${phase2Locked ? 'locked' : gate2aStatus}">
-                            <div class="gate-header">
-                                <span class="gate-icon">${gate2aStatus === 'pass' ? '✅' : '❌'}</span>
-                                Gate 2a: Real Yield ≥ 0%?
-                            </div>
-                            <div class="gate-detail">
-                                Nominal Yield: ${(requiredYield * 100).toFixed(2)}%<br>
-                                Inflation (assumed): 2.50%<br>
-                                Real Yield: ${(realYield * 100).toFixed(2)}%<br>
-                                ${realYield >= 0 ? `You're earning real returns ✓ PASS` : `Negative real yield - money loses purchasing power ✗ FAIL`}
-                            </div>
-                        </div>
-                        <div class="gate-box ${phase2Locked ? 'locked' : gate2bStatus}">
-                            <div class="gate-header">
-                                <span class="gate-icon">${gate2bStatus === 'pass' ? '✅' : gate2bStatus === 'caution' ? '⚠️' : '❌'}</span>
-                                Gate 2b: Current Yield Meets Income Target?
-                            </div>
-                            <div class="gate-detail">
-                                Current Yield: ${currentYield.toFixed(2)}%<br>
-                                Required Yield: ${(requiredYield * 100).toFixed(2)}%<br>
-                                ${gate2bStatus === 'pass' ? `Exceeds target ✓ PASS` : `Below target ⚠️ Proceed only if growth potential exists`}
-                            </div>
-                        </div>
-                        ${!phase2Pass && !phase2Locked ? '<div class="stop-message">⏹️ STOP: Phase 2 critical gate failed.</div>' : ''}
-                        ${phase2Pass && !phase2Locked ? '<div class="arrow">↓</div>' : ''}
+                // Phase 4: Decision
+                const decisionClass = decision.replace(/ /g, '-');
+                document.getElementById('phase4').innerHTML = `
+                    <div class="decision-hero ${decisionClass} animate-fade-in" style="margin-left: 3.5rem;">
+                        <h2 style="color: white; font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem;">${decision}</h2>
+                        <p style="opacity: 0.9;">${decision.includes('STOP') ? 'Critical requirements not met.' : 'Sequential validation successful.'}</p>
                     </div>
                 `;
 
-                // PHASE 3: Risk Filter
-                const phase3Locked = !phase1Pass || !phase2Pass;
-                const gate3aStatus = couponType === 'fixed' ? 'pass' : couponType === 'floating' ? 'caution' : 'fail';
-                const gate3bStatus = durationMatch === 'good' ? 'pass' : durationMatch === 'moderate' ? 'caution' : 'fail';
-                const gate3cStatus = !isCallable ? 'pass' : 'caution';
-
-                let phase3HTML = `
-                    <div class="phase ${phase3Locked ? 'locked' : ''}">
-                        <div class="phase-title">PHASE 3: Risk Filter Gates (CAUTION FLAGS)</div>
-                        <div class="gate-box ${phase3Locked ? 'locked' : gate3aStatus}">
-                            <div class="gate-header">
-                                <span class="gate-icon">${gate3aStatus === 'pass' ? '✅' : gate3aStatus === 'caution' ? '⚠️' : '❌'}</span>
-                                Gate 3a: Coupon Type Matches Rate Outlook?
-                            </div>
-                            <div class="gate-detail">
-                                Coupon Type: ${couponType.toUpperCase()}<br>
-                                Rate Outlook: ${rateOutlook}<br>
-                                ${gate3aStatus === 'pass' ? `Fixed coupon suitable for stable/falling rates ✓ PASS` : gate3aStatus === 'caution' ? `Floating coupon - rate risk uncertain ⚠️ CAUTION` : `Zero-coupon highly sensitive to rate changes ❌ FAIL`}
-                            </div>
-                        </div>
-                        <div class="gate-box ${phase3Locked ? 'locked' : gate3bStatus}">
-                            <div class="gate-header">
-                                <span class="gate-icon">${gate3bStatus === 'pass' ? '✅' : gate3bStatus === 'caution' ? '⚠️' : '❌'}</span>
-                                Gate 3b: Duration Matches Your Horizon?
-                            </div>
-                            <div class="gate-detail">
-                                Duration Match: ${durationMatch === 'good' ? 'Good - aligned' : durationMatch === 'moderate' ? 'Moderate - some mismatch' : 'Poor - significant mismatch'}<br>
-                                ${gate3bStatus === 'pass' ? `Bond term suits your holding period ✓ PASS` : gate3bStatus === 'caution' ? `Some duration mismatch ⚠️ CAUTION` : `Poor alignment with investment horizon ❌ FAIL`}
-                            </div>
-                        </div>
-                        <div class="gate-box ${phase3Locked ? 'locked' : gate3cStatus}">
-                            <div class="gate-header">
-                                <span class="gate-icon">${gate3cStatus === 'pass' ? '✅' : '⚠️'}</span>
-                                Gate 3c: Callability Manageable?
-                            </div>
-                            <div class="gate-detail">
-                                Bond Status: ${isCallable ? 'Callable' : 'Non-Callable'}<br>
-                                ${gate3cStatus === 'pass' ? `No call risk - yield locked in ✓ PASS` : `Refinance risk if rates fall ⚠️ CAUTION`}
-                            </div>
-                        </div>
-                    </div>
-                `;
-
-                // PHASE 4: Final Decision
-                const allCriticalPass = phase1Pass && phase2Pass;
-                const riskFlags = (gate3aStatus !== 'pass' ? 1 : 0) + (gate3bStatus !== 'pass' ? 1 : 0) + (gate3cStatus !== 'pass' ? 1 : 0);
-
-                let decision = '';
-                let decisionClass = '';
-                let icon = '';
-                let rationale = '';
-
-                if (allCriticalPass && riskFlags === 0) {
-                    decision = 'EXECUTE';
-                    decisionClass = 'execute';
-                    icon = '✅';
-                    rationale = 'All gates pass. Bond offers fair valuation, real returns, and manageable risk. Ready to buy.';
-                } else if (allCriticalPass && riskFlags > 0) {
-                    decision = 'EXECUTE WITH CAUTION';
-                    decisionClass = 'execute-caution';
-                    icon = '⚠️';
-                    rationale = `All critical gates pass but ${riskFlags} caution flag(s) raised. Reduce position size or monitor closely.`;
-                } else {
-                    decision = 'STOP';
-                    decisionClass = 'stop';
-                    icon = '❌';
-                    rationale = 'Critical gate(s) failed. Bond fails valuation or real money test. Search for better opportunities.';
-                }
-
-                let phase4HTML = `
-                    <div class="phase">
-                        <div class="phase-title">PHASE 4: Final Decision</div>
-                        <div class="final-decision ${decisionClass}">
-                            <div class="decision-icon">${icon}</div>
-                            <h2 class="decision-title">${decision}</h2>
-                            <p class="decision-subtitle">${rationale}</p>
-                        </div>
-                    </div>
-                `;
-
-                document.getElementById('phase1').innerHTML = phase1HTML;
-                document.getElementById('phase2').innerHTML = phase2HTML;
-                document.getElementById('phase3').innerHTML = phase3HTML;
-                document.getElementById('phase4').innerHTML = phase4HTML;
-                resultsDiv.style.display = 'block';
+                resultsSection.style.display = 'block';
+                resultsSection.scrollIntoView({ behavior: 'smooth' });
 
             } catch (error) {
-                errorContainer.innerHTML = `<div class="error-message">${error.message}</div>`;
-                resultsDiv.style.display = 'block';
+                errorContainer.innerHTML = `<div class="badge badge-error" style="display: block; padding: 1rem;">Server Error: ${error.message}</div>`;
+                resultsSection.style.display = 'block';
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Run Sequential Veto Audit';
             }
         }
     </script>
 </body>
+
 </html>

@@ -1,10 +1,15 @@
 # 🔍 Bond Analysis Tools Suite
 
-**A collection of 5 professional-grade bond evaluation frameworks** built with pure HTML, CSS, and JavaScript. No dependencies, no backend required.
+**A professional-grade bond evaluation suite** featuring a modern client-server architecture. Core mathematical logic is handled by a robust Node.js backend, providing a unified and premium user experience across all analysis frameworks.
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![Node.js](https://img.shields.io/badge/Node.js-339933?logo=nodedotjs&logoColor=white)
+![Express](https://img.shields.io/badge/Express-000000?logo=express&logoColor=white)
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?logo=css3&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)
+
+---
 
 ## 🚀 Live Demo
 
@@ -26,24 +31,31 @@ This repository contains 5 distinct bond analysis tools, each with a different e
 
 ---
 
-## ✨ Features
+## 🏗️ Architecture & Modernization
 
-- **Zero Dependencies**: Pure HTML/CSS/JavaScript, runs in any modern browser
-- **Offline Capable**: No external API calls, works completely offline
-- **Mobile Responsive**: Clean, professional UI that works on all devices
-- **Educational**: Shows formulas, calculations, and decision logic
-- **Customizable**: Easy to modify thresholds and criteria
+This suite has been recently upgraded from standalone HTML files to a modern **Full-Stack Architecture**:
+
+- **Backend**: A Node.js/Express server handles all complex financial modeling, including YTM solvers and DCF valuations.
+- **Frontend**: Modernized HTML5 interfaces powered by a **Global CSS Design System** (`css/global.css`) for a premium, unified look.
+- **API Integration**: Frontend and backend communicate via a structured REST API using an asynchronous client.
+
+---
+
+## ✨ Key Features
+
+- **Server-Side Logic**: High-performance calculation engine separated from the presentation layer.
+- **Unified Design System**: A premium, responsive UI with consistent typography, color palettes, and animations.
+- **Micro-Animations**: Subtle transitions and fade-in effects for a superior user experience.
+- **Scalable Framework**: Easy to add new evaluation phases or calculation endpoints.
+- **Educational Transparency**: Formulas and logic are documented and implemented clearly in the backend services.
 
 ### Core Capabilities
 
-- Yield-to-Maturity (YTM) calculation using Newton-Raphson method
-- Macaulay Duration computation
-- Real yield (inflation-adjusted) analysis
-- Credit spread evaluation
-- Currency risk assessment
-- Interest rate risk modeling
-- Fair price calculation using DCF
-- Risk filtering across multiple dimensions
+- **Precision YTM**: Yield-to-Maturity calculation via Newton-Raphson iteration.
+- **DCF Valuation**: Fair price discovery using Discounted Cash Flow models.
+- **Sensitivity Analysis**: Macaulay Duration and price volatility modeling.
+- **Risk Assessment**: Real-yield (inflation), Credit Spread, and FX risk evaluation.
+- **Veto-Gate Logic**: Sequential decision-making frameworks for institutional-grade audit.
 
 ---
 
@@ -122,11 +134,40 @@ This repository contains 5 distinct bond analysis tools, each with a different e
 
 ---
 
-## 🛠️ Installation
+## 🚀 Installation & Setup
+### 1. Clone the Repository
+```bash
+git clone https://github.com/Toobyloba/BondVerificationTools.git
+cd BondVerificationTools
+```
 
-### Option 1: Clone the Repository
-- git clone https://github.com/Toobyloba/BondVerificationTools.git
-- cd BondVerificationTools
+### 2. Setup the Backend Server
+The analysis logic now resides in a Node.js environment:
+```bash
+cd server
+npm install
+```
+
+### 3. Run the Server
+Start the development server (default is port 3000):
+```bash
+npm run dev
+```
+
+### 4. Open the Interface
+Access the tools hub by opening the root HTML file in your browser:
+- `Bond-Analysis-Tools-Hub.html`
+
+---
+
+## 📁 Project Structure
+
+- **`Bond-*.html`**: Frontend tool pages (Flowchart, Screener, Valuation, etc.)
+- **`css/global.css`**: Centralized styling and design tokens.
+- **`js/api-client.js`**: Asynchronous API wrapper for backend communication.
+- **`server/`**:
+  - `index.js`: Express server and REST API endpoints.
+  - `services/bond-math.js`: Core mathematical functions (YTM, Duration, DCF).
 
 ## 🤝 Contributing
 
@@ -173,8 +214,8 @@ Contributions welcome! If you'd like to improve these tools:
 **Location**: Based in France
 
 **Connect**: 
-- GitHub: [@yourusername](https://github.com/yourusername)
-- LinkedIn: [Your LinkedIn](https://linkedin.com/in/balogun-tobi)
+- GitHub: [@Toobyloba](https://github.com/Toobyloba)
+- LinkedIn: [Toobyloba](https://linkedin.com/in/balogun-tobi)
 
 ---
 

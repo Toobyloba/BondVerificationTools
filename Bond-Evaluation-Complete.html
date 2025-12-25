@@ -1,695 +1,325 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bond Evaluation Framework - Complete</title>
+    <title>Institutional Bond Evaluation - 7 Phases</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/global.css">
     <style>
-        :root {
-            --color-primary: #208091;
-            --color-success: #2db566;
-            --color-warning: #f59e0b;
-            --color-error: #e84444;
-            --color-bg: #f8f8f6;
-            --color-surface: #fff;
-            --color-text: #1a1a19;
-            --color-text-secondary: #666;
-            --color-border: #e0e0dd;
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background-color: var(--color-bg);
-            color: var(--color-text);
-            margin: 0;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        header {
-            margin-bottom: 32px;
-            border-bottom: 2px solid var(--color-border);
-            padding-bottom: 16px;
-        }
-
-        h1 {
-            margin: 0 0 8px 0;
-            font-size: 28px;
-            font-weight: 600;
-        }
-
-        .subtitle {
-            color: var(--color-text-secondary);
-            font-size: 14px;
-            margin: 0;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        @media (max-width: 768px) {
-            .grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .card {
-            background: var(--color-surface);
-            border: 1px solid var(--color-border);
-            border-radius: 8px;
-            padding: 20px;
-        }
-
-        .card-title {
-            font-size: 14px;
-            font-weight: 600;
-            text-transform: uppercase;
-            color: var(--color-text-secondary);
-            margin: 0 0 16px 0;
-            letter-spacing: 0.5px;
-        }
-
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        label {
-            display: block;
-            font-size: 13px;
-            font-weight: 500;
-            margin-bottom: 6px;
-            color: var(--color-text);
-        }
-
-        input, select {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid var(--color-border);
-            border-radius: 6px;
-            font-size: 14px;
-            background: var(--color-surface);
-            color: var(--color-text);
-        }
-
-        input:focus, select:focus {
-            outline: none;
-            border-color: var(--color-primary);
-            box-shadow: 0 0 0 2px rgba(32, 128, 145, 0.1);
-        }
-
-        button {
-            background: var(--color-primary);
+        .page-header {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
             color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background 150ms;
+            padding: 3rem 0;
+            margin-bottom: 3rem;
+            border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+            text-align: center;
         }
 
-        button:hover {
-            background: #1a6a78;
-        }
-
-        button:active {
-            background: #155a68;
-        }
-
-        .results-section {
-            margin-top: 32px;
-        }
-
-        .phase {
-            margin-bottom: 32px;
-        }
-
-        .phase-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--color-primary);
-            margin: 24px 0 16px 0;
-            padding-bottom: 8px;
-            border-bottom: 2px solid var(--color-border);
-        }
-
-        .step {
-            background: var(--color-surface);
-            border: 1px solid var(--color-border);
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 12px;
-        }
-
-        .step-label {
-            font-size: 12px;
-            text-transform: uppercase;
-            color: var(--color-text-secondary);
-            letter-spacing: 0.5px;
-            margin-bottom: 6px;
-        }
-
-        .step-title {
-            font-weight: 600;
-            margin-bottom: 8px;
-            font-size: 14px;
-        }
-
-        .step-value {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--color-primary);
-            font-family: monospace;
-            margin-bottom: 8px;
-        }
-
-        .step-detail {
-            font-size: 13px;
-            color: var(--color-text-secondary);
-            margin-bottom: 6px;
-        }
-
-        .step.pass {
-            border-left: 4px solid var(--color-success);
-            background: rgba(45, 181, 102, 0.05);
-        }
-
-        .step.caution {
-            border-left: 4px solid var(--color-warning);
-            background: rgba(245, 158, 11, 0.05);
-        }
-
-        .step.fail {
-            border-left: 4px solid var(--color-error);
-            background: rgba(232, 68, 68, 0.05);
-        }
-
-        .decision-matrix {
-            background: var(--color-surface);
-            border: 1px solid var(--color-border);
-            border-radius: 8px;
-            padding: 20px;
-            margin: 24px 0;
-        }
-
-        .matrix-row {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr;
-            gap: 12px;
-            padding: 12px;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-            font-size: 13px;
-        }
-
-        .matrix-row:first-child {
-            font-weight: 600;
-            background: rgba(0, 0, 0, 0.02);
-        }
-
-        .matrix-row:last-child {
-            border-bottom: none;
-        }
-
-        .matrix-cell {
+        .phase-header {
+            background: var(--surface);
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            margin-bottom: 2rem;
             display: flex;
             align-items: center;
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .status-badge.pass {
-            background: rgba(45, 181, 102, 0.2);
-            color: var(--color-success);
-        }
-
-        .status-badge.caution {
-            background: rgba(245, 158, 11, 0.2);
-            color: var(--color-warning);
-        }
-
-        .status-badge.fail {
-            background: rgba(232, 68, 68, 0.2);
-            color: var(--color-error);
-        }
-
-        .final-decision {
-            background: var(--color-surface);
-            border: 3px solid var(--color-border);
-            border-radius: 8px;
-            padding: 32px;
-            margin: 32px 0;
-            text-align: center;
-        }
-
-        .final-decision.buy {
-            border-color: var(--color-success);
-            background: rgba(45, 181, 102, 0.05);
-        }
-
-        .final-decision.caution {
-            border-color: var(--color-warning);
-            background: rgba(245, 158, 11, 0.05);
-        }
-
-        .final-decision.avoid {
-            border-color: var(--color-error);
-            background: rgba(232, 68, 68, 0.05);
-        }
-
-        .decision-icon {
-            font-size: 48px;
-            margin-bottom: 12px;
-        }
-
-        .decision-title {
-            font-size: 32px;
+            gap: 1rem;
+            color: var(--primary);
             font-weight: 700;
-            margin: 0 0 8px 0;
         }
 
-        .final-decision.buy .decision-title {
-            color: var(--color-success);
+        .phase-badge {
+            background: var(--primary);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 99px;
+            font-size: 0.75rem;
         }
 
-        .final-decision.caution .decision-title {
-            color: var(--color-warning);
-        }
-
-        .final-decision.avoid .decision-title {
-            color: var(--color-error);
-        }
-
-        .decision-subtitle {
-            font-size: 14px;
-            color: var(--color-text-secondary);
-            margin: 0;
-        }
-
-        .error-message {
-            background: rgba(232, 68, 68, 0.1);
-            color: var(--color-error);
-            padding: 12px;
-            border-radius: 6px;
-            font-size: 13px;
-            margin-bottom: 16px;
-            border-left: 4px solid var(--color-error);
-        }
-
-        .three-col {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 16px;
-        }
-
-        @media (max-width: 768px) {
-            .three-col {
-                grid-template-columns: 1fr;
-            }
-
-            .matrix-row {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .metric-box {
-            background: rgba(0, 0, 0, 0.02);
-            padding: 12px;
-            border-radius: 6px;
+        .metric-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
             text-align: center;
+            transition: var(--transition);
         }
 
-        .metric-label {
-            color: var(--color-text-secondary);
-            font-size: 11px;
+        .metric-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow);
+        }
+
+        .metric-card .label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 6px;
+            margin-bottom: 0.5rem;
         }
 
-        .metric-value {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--color-text);
-            font-family: monospace;
+        .metric-card .value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .institutional-decision {
+            padding: 3rem;
+            border-radius: var(--radius-lg);
+            text-align: center;
+            color: white;
+            margin-top: 4rem;
+        }
+
+        .institutional-decision.buy {
+            background: var(--success);
+        }
+
+        .institutional-decision.avoid {
+            background: var(--error);
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <header>
-            <h1>Bond Evaluation Framework</h1>
-            <p class="subtitle">Complete 7-Phase Decision Algorithm with Weighted Criteria</p>
-        </header>
 
-        <!-- INPUT FORMS -->
-        <div class="grid">
-            <!-- Phase 1: Data Collection -->
+<body>
+    <div class="page-header">
+        <div class="container">
+            <h1 style="color: white; margin-bottom: 0.5rem;">Complete Evaluation</h1>
+            <p style="opacity: 0.9;">Institutional-Grade 7-Phase Assessment Matrix</p>
+        </div>
+    </div>
+
+    <div class="container" style="padding-top: 0;">
+        <div class="grid grid-cols-2">
             <div class="card">
-                <h3 class="card-title">Phase 1: Data Collection</h3>
-                <div class="form-group">
-                    <label>Face Value (Par) - $</label>
-                    <input type="number" id="faceValue" value="1000" min="1" step="100">
-                </div>
-                <div class="form-group">
-                    <label>Coupon Rate - %</label>
-                    <input type="number" id="couponRate" value="5" min="0" step="0.1">
+                <h3 class="card-title">Phase 1: Security Parameters</h3>
+                <div class="grid grid-cols-2">
+                    <div class="form-group">
+                        <label>Face Value - $</label>
+                        <input type="number" id="faceValue" value="1000">
+                    </div>
+                    <div class="form-group">
+                        <label>Coupon Rate - %</label>
+                        <input type="number" id="couponRate" value="5">
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>Coupon Type</label>
                     <select id="couponType">
-                        <option value="fixed">Fixed</option>
-                        <option value="floating">Floating</option>
-                        <option value="zero">Zero-Coupon</option>
+                        <option value="fixed">Fixed Rate</option>
+                        <option value="floating">Floating Rate</option>
+                        <option value="zero">Zero Coupon</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label>Current Market Price - $</label>
-                    <input type="number" id="marketPrice" value="950" min="1" step="10">
+                <div class="grid grid-cols-2">
+                    <div class="form-group">
+                        <label>Market Price - $</label>
+                        <input type="number" id="marketPrice" value="950">
+                    </div>
+                    <div class="form-group">
+                        <label>Yield (YTM) - %</label>
+                        <input type="number" id="ytm" value="6">
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>Years to Maturity</label>
-                    <input type="number" id="yearsToMaturity" value="10" min="0.1" step="0.1">
-                </div>
-                <div class="form-group">
-                    <label>Yield to Maturity (YTM) - %</label>
-                    <input type="number" id="ytm" value="6" min="0" step="0.1">
-                </div>
-                <div class="form-group">
-                    <label>Credit Rating</label>
-                    <select id="creditRating">
-                        <option>AAA</option>
-                        <option>AA</option>
-                        <option>A</option>
-                        <option>BBB</option>
-                        <option>BB</option>
-                        <option>B</option>
-                        <option>CCC</option>
-                    </select>
+                <div class="grid grid-cols-2">
+                    <div class="form-group">
+                        <label>Term (yrs)</label>
+                        <input type="number" id="yearsToMaturity" value="10">
+                    </div>
+                    <div class="form-group">
+                        <label>Rating</label>
+                        <select id="creditRating">
+                            <option>AAA</option>
+                            <option>AA</option>
+                            <option>A</option>
+                            <option selected>BBB</option>
+                            <option>BB</option>
+                            <option>B</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
-            <!-- Phase 3-7: Market Context -->
             <div class="card">
-                <h3 class="card-title">Phases 3-7: Market Context</h3>
-                <div class="form-group">
-                    <label>Benchmark Rate (Treasury YTM) - %</label>
-                    <input type="number" id="benchmarkRate" value="4" min="0" step="0.1">
+                <h3 class="card-title">Macro Environment</h3>
+                <div class="grid grid-cols-2">
+                    <div class="form-group">
+                        <label>Treasury YTM - %</label>
+                        <input type="number" id="benchmarkRate" value="4">
+                    </div>
+                    <div class="form-group">
+                        <label>Inflation Exp. - %</label>
+                        <input type="number" id="inflation" value="2.5">
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>Expected Inflation - %</label>
-                    <input type="number" id="inflation" value="2.5" min="0" step="0.1">
-                </div>
-                <div class="form-group">
-                    <label>Duration (years)</label>
-                    <input type="number" id="duration" value="8" min="0.1" step="0.1">
+                <div class="grid grid-cols-2">
+                    <div class="form-group">
+                        <label>Duration (yrs)</label>
+                        <input type="number" id="duration" value="8">
+                    </div>
+                    <div class="form-group">
+                        <label>Liquidity Profile</label>
+                        <select id="liquidity">
+                            <option value="liquid">High (Agency/Large)</option>
+                            <option value="moderate">Moderate</option>
+                            <option value="illiquid">Low (Private)</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>Central Bank Policy</label>
                     <select id="cbPolicy">
-                        <option value="cutting">Cutting Rates</option>
-                        <option value="stable">Stable Rates</option>
-                        <option value="raising">Raising Rates</option>
+                        <option value="cutting">Dovish (Cutting)</option>
+                        <option value="stable" selected>Neutral (Stable)</option>
+                        <option value="raising">Hawkish (Raising)</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label>Is Bond Callable?</label>
-                    <select id="isCallable">
-                        <option value="false">No</option>
-                        <option value="true">Yes</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Liquidity</label>
-                    <select id="liquidity">
-                        <option value="liquid">Highly Liquid (Treasuries, Large Corporate)</option>
-                        <option value="moderate">Moderate (Municipal, Small Corporate)</option>
-                        <option value="illiquid">Illiquid (Private, Unlisted)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Currency (Foreign Bond Risk)</label>
-                    <select id="currencyRisk">
-                        <option value="none">Domestic (No Currency Risk)</option>
-                        <option value="low">Low Risk</option>
-                        <option value="high">High Risk</option>
-                    </select>
+                <div class="grid grid-cols-2">
+                    <div class="form-group">
+                        <label>Callable?</label>
+                        <select id="isCallable">
+                            <option value="false">No</option>
+                            <option value="true">Yes</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Currency Risk</label>
+                        <select id="currencyRisk">
+                            <option value="none">Domestic</option>
+                            <option value="low">International (Stable)</option>
+                            <option value="high">International (Volatile)</option>
+                        </select>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <button onclick="evaluateBond()" style="margin-top: 24px; width: 100%; padding: 14px; font-size: 16px;">
-            Run Complete Bond Evaluation (7 Phases)
+        <button onclick="evaluateBond()" class="btn btn-primary"
+            style="margin-top: 2rem; width: 100%; height: 60px; font-size: 1.125rem;">
+            Commence Full Institutional Audit
         </button>
 
-        <!-- RESULTS -->
         <div class="results-section" id="resultsSection" style="display: none;">
+            <div class="phase-header">
+                <span class="phase-badge">Phase 2</span> Metrics Scorecard
+            </div>
+            <div id="metricsResults" class="grid grid-cols-3" style="margin-bottom: 3rem; gap: 1.5rem;"></div>
+
+            <div class="grid grid-cols-2" style="gap: 3rem;">
+                <div>
+                    <div class="phase-header">
+                        <span class="phase-badge">Phase 3-4</span> Macro Risks
+                    </div>
+                    <div id="macroResults"></div>
+                </div>
+                <div>
+                    <div class="phase-header">
+                        <span class="phase-badge">Phase 5-6</span> Credit & Liquidity
+                    </div>
+                    <div id="creditResults"></div>
+                </div>
+            </div>
+
             <div id="errorContainer"></div>
-
-            <!-- Phase 2: Core Metrics -->
-            <div class="phase">
-                <h2 class="phase-title">Phase 2: Calculate Core Metrics</h2>
-                <div id="phase2Results"></div>
-            </div>
-
-            <!-- Phase 3: Inflation & Currency -->
-            <div class="phase">
-                <h2 class="phase-title">Phase 3: Evaluate Real Returns (Inflation & Currency)</h2>
-                <div id="phase3Results"></div>
-            </div>
-
-            <!-- Phase 4: Interest Rate Risk -->
-            <div class="phase">
-                <h2 class="phase-title">Phase 4: Evaluate Interest Rate Risk</h2>
-                <div id="phase4Results"></div>
-            </div>
-
-            <!-- Phase 5: Credit Risk -->
-            <div class="phase">
-                <h2 class="phase-title">Phase 5: Evaluate Credit Risk</h2>
-                <div id="phase5Results"></div>
-            </div>
-
-            <!-- Phase 6: Bond Features -->
-            <div class="phase">
-                <h2 class="phase-title">Phase 6: Check Bond Features</h2>
-                <div id="phase6Results"></div>
-            </div>
-
-            <!-- Phase 7: Decision Matrix -->
-            <div class="phase">
-                <h2 class="phase-title">Phase 7: Final Decision Matrix</h2>
-                <div id="phase7Results"></div>
-            </div>
-
-            <!-- Final Recommendation -->
             <div id="finalDecision"></div>
         </div>
+
+        <div style="height: 100px;"></div>
     </div>
 
+    <script src="js/api-client.js"></script>
     <script>
-        function createStep(label, title, value, detail, status = 'pass') {
+        function createStep(title, value, detail, status = 'pass') {
+            const icon = status === 'pass' ? '✅' : status === 'caution' ? '⚠️' : '❌';
             return `
-                <div class="step ${status}">
-                    <div class="step-label">${label}</div>
-                    <div class="step-title">${title}</div>
-                    ${value !== null ? `<div class="step-value">${value}</div>` : ''}
-                    <div class="step-detail">${detail}</div>
+                <div class="card" style="margin-bottom: 1rem; border-left: 6px solid var(--${status === 'pass' ? 'success' : status === 'caution' ? 'warning' : 'error'});">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+                        <span style="font-weight: 700;">${icon} ${title}</span>
+                        ${value ? `<span style="font-family: monospace; font-weight: 700; color: var(--primary);">${value}</span>` : ''}
+                    </div>
+                    <div style="font-size: 0.875rem; color: var(--text-muted);">${detail}</div>
                 </div>
             `;
         }
 
-        function evaluateBond() {
+        async function evaluateBond() {
             const resultsSection = document.getElementById('resultsSection');
             const errorContainer = document.getElementById('errorContainer');
+            const btn = document.querySelector('button[onclick="evaluateBond()"]');
+
             errorContainer.innerHTML = '';
+            btn.disabled = true;
+            btn.innerHTML = '<span>Auditing Security...</span>';
 
             try {
-                const faceValue = parseFloat(document.getElementById('faceValue').value);
-                const couponRate = parseFloat(document.getElementById('couponRate').value) / 100;
-                const marketPrice = parseFloat(document.getElementById('marketPrice').value);
-                const yearsToMaturity = parseFloat(document.getElementById('yearsToMaturity').value);
-                const ytm = parseFloat(document.getElementById('ytm').value) / 100;
-                const benchmarkRate = parseFloat(document.getElementById('benchmarkRate').value) / 100;
-                const inflation = parseFloat(document.getElementById('inflation').value) / 100;
-                const duration = parseFloat(document.getElementById('duration').value);
-                const cbPolicy = document.getElementById('cbPolicy').value;
-                const isCallable = document.getElementById('isCallable').value === 'true';
-                const liquidity = document.getElementById('liquidity').value;
-                const currencyRisk = document.getElementById('currencyRisk').value;
-                const creditRating = document.getElementById('creditRating').value;
-
-                if (faceValue <= 0 || marketPrice <= 0 || yearsToMaturity <= 0) {
-                    throw new Error('All prices and years must be positive.');
-                }
-
-                // PHASE 2: Core Metrics
-                const annualCoupon = faceValue * couponRate;
-                const currentYield = (annualCoupon / marketPrice) * 100;
-                const priceVsPar = ((marketPrice - faceValue) / faceValue) * 100;
-                const priceType = marketPrice > faceValue ? 'Premium' : marketPrice < faceValue ? 'Discount' : 'Par';
-
-                let phase2HTML = '';
-                phase2HTML += createStep('Step 1', 'Bond Price Status', null, `Price: $${marketPrice}, Par: $${faceValue}, Type: ${priceType}`, 'pass');
-                phase2HTML += createStep('Step 2', 'Current Yield', `${currentYield.toFixed(2)}%`, `Annual Coupon: $${annualCoupon.toFixed(2)} ÷ Price: $${marketPrice}`, 'pass');
-                phase2HTML += createStep('Step 3', 'Yield to Maturity (YTM)', `${(ytm * 100).toFixed(2)}%`, 'True rate of return if held to maturity', 'pass');
-                document.getElementById('phase2Results').innerHTML = phase2HTML;
-
-                // PHASE 3: Real Returns
-                const realYield = ytm - inflation;
-                let realYieldStatus = realYield > 0.02 ? 'pass' : realYield > 0 ? 'caution' : 'fail';
-                let realYieldInterpretation = realYield > 0.02 ? 'Good - Building wealth' : realYield > 0 ? 'Marginal - Barely keeping up' : 'Avoid - Losing purchasing power';
-
-                let phase3HTML = '';
-                phase3HTML += createStep('Step 4', 'Real Yield (Inflation-Adjusted)', `${(realYield * 100).toFixed(2)}%`, `YTM ${(ytm * 100).toFixed(2)}% - Inflation ${(inflation * 100).toFixed(2)}% = ${realYieldInterpretation}`, realYieldStatus);
-                
-                let currencyStatus = currencyRisk === 'none' ? 'pass' : currencyRisk === 'low' ? 'caution' : 'fail';
-                phase3HTML += createStep('Step 5', 'Currency Risk (Foreign Bonds)', null, `Risk Level: ${currencyRisk === 'none' ? 'Domestic Bond - No Risk' : currencyRisk === 'low' ? 'Low Currency Risk' : 'High Currency Risk - Consider Hedging'}`, currencyStatus);
-                document.getElementById('phase3Results').innerHTML = phase3HTML;
-
-                // PHASE 4: Interest Rate Risk
-                let durationStatus = duration < 3 ? 'pass' : duration < 7 ? 'caution' : 'fail';
-                let durationInterpretation = duration < 3 ? 'Low Risk' : duration < 7 ? 'Moderate Risk' : 'High Risk - Avoid if rates rising';
-
-                let cbStatus = cbPolicy === 'cutting' ? 'pass' : cbPolicy === 'stable' ? 'caution' : 'fail';
-                let cbInterpretation = cbPolicy === 'cutting' ? 'Buy Signal - Prices will rise' : cbPolicy === 'stable' ? 'Neutral - No rate move expected' : 'Caution - Prices may fall';
-
-                let phase4HTML = '';
-                phase4HTML += createStep('Step 6', 'Duration (Interest Rate Sensitivity)', `${duration.toFixed(2)} years`, `${durationInterpretation}. 1% rate rise → ~${duration.toFixed(1)}% price fall`, durationStatus);
-                phase4HTML += createStep('Step 7', 'Central Bank Policy', cbPolicy.toUpperCase(), cbInterpretation, cbStatus);
-                document.getElementById('phase4Results').innerHTML = phase4HTML;
-
-                // PHASE 5: Credit Risk
-                const creditSpread = (ytm - benchmarkRate) * 100;
-                const minSpreadMap = {
-                    'AAA': 0.5, 'AA': 0.75, 'A': 1.5, 'BBB': 2.0, 'BB': 3.5, 'B': 4.5, 'CCC': 5.0
+                const data = {
+                    faceValue: parseFloat(document.getElementById('faceValue').value),
+                    couponRate: parseFloat(document.getElementById('couponRate').value),
+                    bondPrice: parseFloat(document.getElementById('marketPrice').value),
+                    yearsToMaturity: parseFloat(document.getElementById('yearsToMaturity').value),
+                    ytm: parseFloat(document.getElementById('ytm').value),
+                    benchmarkRate: parseFloat(document.getElementById('benchmarkRate').value),
+                    inflation: parseFloat(document.getElementById('inflation').value),
+                    duration: parseFloat(document.getElementById('duration').value),
+                    cbPolicy: document.getElementById('cbPolicy').value,
+                    isCallable: document.getElementById('isCallable').value === 'true',
+                    liquidity: document.getElementById('liquidity').value,
+                    currencyRisk: document.getElementById('currencyRisk').value,
+                    creditRating: document.getElementById('creditRating').value,
+                    riskFreeYTM: parseFloat(document.getElementById('benchmarkRate').value),
+                    bondRating: document.getElementById('creditRating').value,
+                    holdingPeriod: 5,
+                    currencyDepreciation: 0,
+                    homeInflation: parseFloat(document.getElementById('inflation').value)
                 };
-                const minSpread = minSpreadMap[creditRating] || 2.0;
-                let spreadStatus = creditSpread >= minSpread ? 'pass' : creditSpread > 0 ? 'caution' : 'fail';
-                let spreadInterpretation = creditSpread >= minSpread ? 'Adequate - Paid for risk' : creditSpread > 0 ? 'Narrow - Limited compensation' : 'Negative - Avoid';
 
-                let ratingStatus = creditRating === 'AAA' || creditRating === 'AA' || creditRating === 'A' || creditRating === 'BBB' ? 'pass' : 'caution';
+                const result = await BondAPI.evaluateComplete(data);
+                const { results, decision } = result;
 
-                let phase5HTML = '';
-                phase5HTML += createStep('Step 8', 'Credit Spread', `${creditSpread.toFixed(2)}% (Need: ${minSpread}%)`, spreadInterpretation, spreadStatus);
-                phase5HTML += createStep('Step 9', 'Credit Rating', creditRating, ratingStatus === 'pass' ? 'Investment Grade - Lower default risk' : 'High Yield / Junk - Higher risk, needs wide spread', ratingStatus);
-                document.getElementById('phase5Results').innerHTML = phase5HTML;
+                const annualCoupon = data.faceValue * (data.couponRate / 100);
+                const currentYield = (annualCoupon / data.bondPrice) * 100;
 
-                // PHASE 6: Bond Features
-                let callableStatus = !isCallable ? 'pass' : 'caution';
-                let callableInterpretation = !isCallable ? 'Non-Callable - You lock in yield' : 'Callable - Issuer may redeem if rates drop';
-
-                let liquidityStatus = liquidity === 'liquid' ? 'pass' : liquidity === 'moderate' ? 'caution' : 'fail';
-                let liquidityInterpretation = liquidity === 'liquid' ? 'Highly Liquid - Easy to sell' : liquidity === 'moderate' ? 'Moderate - May face discount' : 'Illiquid - Hard to exit';
-
-                let phase6HTML = '';
-                phase6HTML += createStep('Step 10', 'Callability', null, callableInterpretation, callableStatus);
-                phase6HTML += createStep('Step 11', 'Liquidity', null, liquidityInterpretation, liquidityStatus);
-                document.getElementById('phase6Results').innerHTML = phase6HTML;
-
-                // PHASE 7: Decision Matrix with Weighted Criteria
-                const criteria = [
-                    { name: 'Real Yield > 1%', weight: 'Critical', passed: realYield > 0.01, status: realYield > 0.01 ? 'pass' : 'fail' },
-                    { name: 'Credit Spread Adequate', weight: 'High', passed: creditSpread >= minSpread, status: creditSpread >= minSpread ? 'pass' : creditSpread > 0 ? 'caution' : 'fail' },
-                    { name: 'Duration Matches Timeline', weight: 'High', passed: duration < 7, status: duration < 3 ? 'pass' : duration < 7 ? 'caution' : 'fail' },
-                    { name: 'Investment Grade Rating', weight: 'Medium', passed: ratingStatus === 'pass', status: ratingStatus },
-                    { name: 'Non-Callable', weight: 'Low', passed: !isCallable, status: callableStatus },
-                    { name: 'Liquid Market', weight: 'Low', passed: liquidity === 'liquid' || liquidity === 'moderate', status: liquidityStatus }
-                ];
-
-                let matrixHTML = `
-                    <div class="decision-matrix">
-                        <div class="matrix-row">
-                            <div class="matrix-cell"><strong>Criteria</strong></div>
-                            <div class="matrix-cell"><strong>Weight</strong></div>
-                            <div class="matrix-cell"><strong>Your Score</strong></div>
-                            <div class="matrix-cell"><strong>Status</strong></div>
-                        </div>
+                // Metrics
+                document.getElementById('metricsResults').innerHTML = `
+                    <div class="metric-card"><div class="label">Current Yield</div><div class="value">${currentYield.toFixed(2)}%</div></div>
+                    <div class="metric-card"><div class="label">YTM</div><div class="value">${data.ytm.toFixed(2)}%</div></div>
+                    <div class="metric-card"><div class="label">Annual Coupon</div><div class="value">$${annualCoupon.toFixed(0)}</div></div>
                 `;
 
-                criteria.forEach(crit => {
-                    const statusBadge = `<span class="status-badge ${crit.status}">${crit.status.toUpperCase()}</span>`;
-                    matrixHTML += `
-                        <div class="matrix-row">
-                            <div class="matrix-cell">${crit.name}</div>
-                            <div class="matrix-cell">${crit.weight}</div>
-                            <div class="matrix-cell">${crit.passed ? '✅' : '❌'}</div>
-                            <div class="matrix-cell">${statusBadge}</div>
-                        </div>
-                    `;
-                });
+                // Macro
+                document.getElementById('macroResults').innerHTML =
+                    createStep('Real Yield', `${(results.realYield.value * 100).toFixed(2)}%`, results.realYield.detail, results.realYield.passed ? 'pass' : 'fail') +
+                    createStep('Duration Alignment', `${data.duration}y`, results.duration.detail, results.duration.passed ? 'pass' : 'fail') +
+                    createStep('CB Policy', data.cbPolicy.toUpperCase(), 'Central bank interest rate trajectory environment.', 'pass');
 
-                matrixHTML += `</div>`;
-                document.getElementById('phase7Results').innerHTML = matrixHTML;
+                // Credit & Liquidity
+                document.getElementById('creditResults').innerHTML =
+                    createStep('Credit Spread', null, results.spread.detail, results.spread.passed ? 'pass' : 'fail') +
+                    createStep('Callability', null, results.callability.detail, results.callability.passed ? 'pass' : 'caution') +
+                    createStep('Liquidity', data.liquidity.toUpperCase(), results.liquidity.detail, results.liquidity.passed ? 'pass' : 'fail');
 
-                // FINAL DECISION LOGIC
-                const criticalPass = realYield > 0.01;
-                const highCriteria = [creditSpread >= minSpread, duration < 7];
-                const allHighPass = highCriteria.every(c => c);
-                const oneHighFail = !allHighPass;
-
-                let recommendation = '';
-                let recommendationClass = '';
-                let decisionIcon = '';
-
-                if (criticalPass && allHighPass) {
-                    recommendation = 'BUY';
-                    recommendationClass = 'buy';
-                    decisionIcon = '✅';
-                } else if (!criticalPass) {
-                    recommendation = 'AVOID';
-                    recommendationClass = 'avoid';
-                    decisionIcon = '❌';
-                } else if (oneHighFail && realYield > 0.03) {
-                    recommendation = 'CAUTION - BUY REDUCED SIZE';
-                    recommendationClass = 'caution';
-                    decisionIcon = '⚠️';
-                } else {
-                    recommendation = 'AVOID';
-                    recommendationClass = 'avoid';
-                    decisionIcon = '❌';
-                }
-
-                let finalHTML = `
-                    <div class="final-decision ${recommendationClass}">
-                        <div class="decision-icon">${decisionIcon}</div>
-                        <h2 class="decision-title">${recommendation}</h2>
-                        <p class="decision-subtitle">
-                            ${recommendation === 'BUY' ? 'All critical and high-weight criteria pass. Recommended for purchase (≤5% of portfolio).' : 
-                              recommendation === 'CAUTION - BUY REDUCED SIZE' ? 'One high-weight criterion fails but real yield is strong. Consider with reduced position size.' : 
-                              'Critical criterion fails or real yield is negative. Search for better opportunities.'}
-                        </p>
+                const decisionClass = decision === 'BUY' ? 'buy' : 'avoid';
+                document.getElementById('finalDecision').innerHTML = `
+                    <div class="institutional-decision ${decisionClass} animate-fade-in">
+                        <h2 style="color: white; font-size: 3rem; margin-bottom: 0.5rem; font-weight: 700;">${decision}</h2>
+                        <p style="opacity: 0.9;">Institutional Verdict: ${decision === 'BUY' ? 'High-Conviction Investment' : 'Speculative/Exit Grade'}</p>
                     </div>
                 `;
 
-                document.getElementById('finalDecision').innerHTML = finalHTML;
                 resultsSection.style.display = 'block';
+                resultsSection.scrollIntoView({ behavior: 'smooth' });
 
             } catch (error) {
-                errorContainer.innerHTML = `<div class="error-message">${error.message}</div>`;
+                errorContainer.innerHTML = `<div class="badge badge-error" style="display: block; padding: 1rem;">Server Error: ${error.message}</div>`;
                 resultsSection.style.display = 'block';
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Commence Full Institutional Audit';
             }
         }
     </script>
 </body>
+
 </html>
