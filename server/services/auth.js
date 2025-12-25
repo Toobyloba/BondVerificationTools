@@ -26,9 +26,18 @@ function loadSessions() {
     }
 }
 
+// Helper: Ensure Data Dir Exists
+function ensureDir(filePath) {
+    const dir = path.dirname(filePath);
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+    }
+}
+
 // Helper: Save Sessions
 function saveSessions() {
     try {
+        ensureDir(SESSIONS_FILE);
         const data = Object.fromEntries(SESSIONS);
         fs.writeFileSync(SESSIONS_FILE, JSON.stringify(data, null, 2));
     } catch (e) {
@@ -52,6 +61,7 @@ function getUsers() {
 
 // Helper: Write users
 function saveUsers(users) {
+    ensureDir(USERS_FILE);
     fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
 }
 

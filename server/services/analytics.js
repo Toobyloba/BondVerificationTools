@@ -25,14 +25,24 @@ try {
     console.error("Failed to load analytics:", e);
 }
 
-// Periodic Save (Every 60 seconds) to avoid disk thrashing
+// Periodic Save (Every 60 seconds)
 setInterval(() => {
+    saveStats();
+}, 60000);
+
+function saveStats() {
     try {
+        const dir = path.dirname(DATA_FILE);
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+        }
         fs.writeFileSync(DATA_FILE, JSON.stringify(stats, null, 2));
+        stats.last_save_error = null; // Clear error on success
     } catch (e) {
         console.error("Error saving analytics:", e);
+        stats.last_save_error = e.message; // Expose error to API
     }
-}, 60000);
+}
 
 // Bot Detection Patterns
 const BOTS = [
@@ -105,6 +115,7 @@ module.exports = {
         // Only track HTML pages or root
         if (req.path.endsWith('.html') || req.path === '/') {
             trackRequest(req);
+            console.log(`Analytics: Tracked visit to ${req.path}`);
         }
         next();
     },
