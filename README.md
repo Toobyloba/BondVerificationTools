@@ -1,6 +1,6 @@
-# 🔍 Bond Analysis Tools Suite
+# 🔍 BondMetrics Pro
 
-**A professional-grade bond evaluation suite** featuring a modern client-server architecture. Core mathematical logic is handled by a robust Node.js backend, providing a unified and premium user experience across all analysis frameworks.
+**BondMetrics Pro** is a professional-grade bond evaluation suite featuring a modern client-server architecture. Core mathematical logic is handled by a robust Node.js backend, providing a unified and premium user experience across all analysis frameworks.
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Node.js](https://img.shields.io/badge/Node.js-339933?logo=nodedotjs&logoColor=white)

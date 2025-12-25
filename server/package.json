@@ -1,7 +1,7 @@
 {
-  "name": "bond-verification-tools-server",
+  "name": "bondmetrics-pro-server",
   "version": "1.0.0",
-  "description": "Backend server for Bond Verification Tools",
+  "description": "Backend server for BondMetrics Pro Analysis Suite",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",

@@ -1,5 +1,5 @@
 /**
- * Frontend API client for Bond Verification Tools
+ * Frontend API client for BondMetrics Pro
  */
 // detect if we are running locally (localhost, 127.0.0.1, or opening file directly from disk)
 const hostname = window.location.hostname;

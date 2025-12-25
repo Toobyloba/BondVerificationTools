@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bond Screener</title>
+    <title>BondMetrics Pro - Screener</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/global.css">
     <style>
@@ -115,14 +115,9 @@
 </head>
 
 <body>
-    <div class="page-header">
-        <div class="container">
-            <h1 style="color: white; margin-bottom: 0.5rem;">Bond Screener</h1>
-            <p style="opacity: 0.9;">Professional Bond Evaluation Framework</p>
-        </div>
-    </div>
+    <script src="js/navigation.js"></script>
 
-    <div class="container" style="padding-top: 0;">
+    <div class="container" style="padding-top: 3rem;">
         <div class="grid grid-cols-2">
             <!-- Step 0: Bond Static Data -->
             <div class="card">
@@ -196,6 +191,72 @@
         <div class="card" style="margin-top: 1.5rem;">
             <h3 class="card-title">Liquidity & Features</h3>
             <div class="grid grid-cols-2">
+                <input type="number" id="faceValue" value="1000">
+            </div>
+            <div class="form-group">
+                <label>Current Market Price (P) - $</label>
+                <input type="number" id="marketPrice" value="950">
+            </div>
+            <div class="form-group">
+                <label>Coupon Rate (c) - %</label>
+                <input type="number" id="couponRate" value="5">
+            </div>
+            <div class="form-group">
+                <label>Coupon Type</label>
+                <select id="couponType">
+                    <option value="fixed">Fixed</option>
+                    <option value="floating">Floating</option>
+                    <option value="zero">Zero-Coupon</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Years to Maturity (n)</label>
+                <input type="number" id="yearsToMaturity" value="10">
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 class="card-title">Risk Parameters</h3>
+            <div class="grid grid-cols-2">
+                <div class="form-group">
+                    <label>Expected Inflation - %</label>
+                    <input type="number" id="inflation" value="2.5">
+                </div>
+                <div class="form-group">
+                    <label>Risk-Free YTM - %</label>
+                    <input type="number" id="riskFreeYTM" value="4">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Bond Rating</label>
+                <select id="bondRating">
+                    <option>AAA</option>
+                    <option>AA</option>
+                    <option>A</option>
+                    <option selected>BBB</option>
+                    <option>BB</option>
+                    <option>B</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Hold Period (yrs)</label>
+                <input type="number" id="holdingPeriod" value="5">
+            </div>
+            <div class="grid grid-cols-2">
+                <div class="form-group">
+                    <label>FX Deprec. - %</label>
+                    <input type="number" id="currencyDepreciation" value="0">
+                </div>
+                <div class="form-group">
+                    <label>Home Inflation - %</label>
+                    <input type="number" id="homeInflation" value="2.5">
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 class="card-title">Liquidity & Features</h3>
+            <div class="grid grid-cols-2">
                 <div class="form-group">
                     <label>Is Bond Callable?</label>
                     <select id="isCallable">
@@ -210,57 +271,60 @@
             </div>
         </div>
 
-        <button onclick="evaluateBond()" class="btn btn-primary"
-            style="margin-top: 2rem; width: 100%; height: 60px; font-size: 1.125rem;">
-            Run Full Evaluation
-        </button>
-
-        <div class="results-section" id="resultsSection" style="display: none;">
-            <h2 style="font-size: 1.5rem; margin-top: 2rem;">Analysis Summary</h2>
-            <div id="metricsContainer" class="grid grid-cols-3" style="margin-bottom: 2rem;"></div>
-
-            <div id="errorContainer"></div>
-
-            <div class="step-header">
-                <div class="step-number">1</div>
-                <h3 style="margin: 0; font-size: 1.125rem;">Core Yield Analysis</h3>
-            </div>
-            <div id="step1Results"></div>
-
-            <div class="step-header">
-                <div class="step-number">2</div>
-                <h3 style="margin: 0; font-size: 1.125rem;">Inflation Protection</h3>
-            </div>
-            <div id="step2Results"></div>
-
-            <div class="step-header">
-                <div class="step-number">3</div>
-                <h3 style="margin: 0; font-size: 1.125rem;">Interest Rate Risk</h3>
-            </div>
-            <div id="step3Results"></div>
-
-            <div class="step-header">
-                <div class="step-number">4</div>
-                <h3 style="margin: 0; font-size: 1.125rem;">Credit Risk Assessment</h3>
-            </div>
-            <div id="step4Results"></div>
-
-            <div class="step-header">
-                <div class="step-number">5</div>
-                <h3 style="margin: 0; font-size: 1.125rem;">Currency Risk Assessment</h3>
-            </div>
-            <div id="step5Results"></div>
-
-            <div class="step-header">
-                <div class="step-number">6</div>
-                <h3 style="margin: 0; font-size: 1.125rem;">Liquidity & Provisions</h3>
-            </div>
-            <div id="step6Results"></div>
-
-            <div id="decisionBox"></div>
+        <div style="display: flex; align-items: flex-end;">
+            <button onclick="evaluateBond()" class="btn btn-primary"
+                style="width: 100%; height: 60px; font-size: 1.125rem;">
+                Run Full Evaluation
+            </button>
         </div>
+    </div>
 
-        <div style="height: 100px;"></div>
+    <div class="container results-section" id="resultsSection" style="display: none; padding-top: 0;">
+        <h2 style="font-size: 1.5rem; margin-top: 2rem;">Analysis Summary</h2>
+        <div id="metricsContainer" class="grid grid-cols-3" style="margin-bottom: 2rem;"></div>
+
+        <div id="errorContainer"></div>
+
+        <div class="step-header">
+            <div class="step-number">1</div>
+            <h3 style="margin: 0; font-size: 1.125rem;">Core Yield Analysis</h3>
+        </div>
+        <div id="step1Results"></div>
+
+        <div class="step-header">
+            <div class="step-number">2</div>
+            <h3 style="margin: 0; font-size: 1.125rem;">Inflation Protection</h3>
+        </div>
+        <div id="step2Results"></div>
+
+        <div class="step-header">
+            <div class="step-number">3</div>
+            <h3 style="margin: 0; font-size: 1.125rem;">Interest Rate Risk</h3>
+        </div>
+        <div id="step3Results"></div>
+
+        <div class="step-header">
+            <div class="step-number">4</div>
+            <h3 style="margin: 0; font-size: 1.125rem;">Credit Risk Assessment</h3>
+        </div>
+        <div id="step4Results"></div>
+
+        <div class="step-header">
+            <div class="step-number">5</div>
+            <h3 style="margin: 0; font-size: 1.125rem;">Currency Risk Assessment</h3>
+        </div>
+        <div id="step5Results"></div>
+
+        <div class="step-header">
+            <div class="step-number">6</div>
+            <h3 style="margin: 0; font-size: 1.125rem;">Liquidity & Provisions</h3>
+        </div>
+        <div id="step6Results"></div>
+
+        <div id="decisionBox"></div>
+    </div>
+
+    <div style="height: 100px;"></div>
     </div>
 
     <script src="js/api-client.js"></script>
@@ -358,6 +422,7 @@
             }
         }
     </script>
+    <script src="js/footer.js"></script>
 </body>
 
 </html>
