@@ -1,7 +1,10 @@
 /**
  * Frontend API client for Bond Verification Tools
  */
-const API_BASE_URL = 'http://localhost:3000/api/v1';
+// detect if we are running locally (localhost, 127.0.0.1, or opening file directly from disk)
+const hostname = window.location.hostname;
+const isLocal = !hostname || hostname === 'localhost' || hostname === '127.0.0.1';
+const API_BASE_URL = isLocal ? 'http://localhost:3000/api/v1' : '/api/v1';
 
 const BondAPI = {
     /**
