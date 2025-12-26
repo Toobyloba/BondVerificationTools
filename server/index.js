@@ -3,6 +3,7 @@ const cors = require('cors');
 const path = require('path');
 const authService = require('./services/auth');
 const analyticsService = require('./services/analytics');
+const smartEvaluatorService = require('./services/smart-evaluator');
 const { solveYTM, calculateDuration, calculateFairPrice } = require('./services/bond-math');
 
 const app = express();
@@ -450,6 +451,19 @@ app.post('/api/v1/calculate/flowchart', (req, res) => {
 
     } catch (error) {
         res.status(500).json({ error: error.message });
+    }
+});
+
+/**
+ * API Route: Smart Evaluator Pro
+ * Ported from Smart-Pro.html
+ */
+app.post('/api/tools/smart-evaluator', (req, res) => {
+    try {
+        const result = smartEvaluatorService.evaluate(req.body);
+        res.json(result);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
     }
 });
 

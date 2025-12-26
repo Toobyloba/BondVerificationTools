@@ -29,6 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <h4 class="footer-heading">Quick Links</h4>
                         <div class="footer-links">
                             <a href="Bond-Analysis-Tools-Hub.html">Home</a>
+                            <a href="Smart-Pro.html">Smart Evaluator</a>
                             <a href="Bond-Analysis-Flowchart.html">Analysis Flowchart</a>
                             <a href="Bond-Valuation-Screener.html">Valuation Screener</a>
                             <a href="Bond-Screener.html">Bond Screener</a>

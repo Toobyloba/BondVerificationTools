@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 <div class="nav-links" id="navLinks">
                     <a href="Bond-Analysis-Tools-Hub.html" class="nav-link" data-page="hub">Home</a>
+                    <a href="Smart-Pro.html" class="nav-link" data-page="smart">Smart Evaluator</a>
                     <a href="Bond-Analysis-Flowchart.html" class="nav-link" data-page="flowchart">Analysis Flowchart</a>
                     <a href="Bond-Valuation-Screener.html" class="nav-link" data-page="valuation">Valuation Screener</a>
                     <a href="Bond-Screener.html" class="nav-link" data-page="screener">Bond Screener</a>

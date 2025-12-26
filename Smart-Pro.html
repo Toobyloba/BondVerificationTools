@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bond Evaluator Pro - Smart Buy/Hold/Sell Analysis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/smart-pro.css">
+</head>
+
+<body>
+
+    <div class="container" style="padding-top: 2rem;">
+        <!-- <header style="text-align: center; margin-bottom: 3rem;">
+            <p class="subtitle" style="font-size: 1.1rem;">Institutional-grade 8-point analysis framework for Buy, Hold,
+                or Sell decisions.</p>
+        </header> -->
+
+        <div class="mode-selector">
+            <p class="mode-title">Select Analysis Mode</p>
+            <div class="mode-options">
+                <div class="mode-option">
+                    <input type="radio" id="modeBuy" name="mode" value="buy" checked>
+                    <label for="modeBuy">📊 New Position Analysis (BUY)</label>
+                </div>
+                <div class="mode-option">
+                    <input type="radio" id="modeHoldSell" name="mode" value="holdSell">
+                    <label for="modeHoldSell">💼 Existing Position Audit (HOLD/SELL)</label>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="grid grid-cols-2">
+            <!-- Bond Details -->
+            <div class="card">
+                <h3 style="color: var(--primary-light); font-size: 1.25rem; margin-bottom: 1.5rem;">Bond Details</h3>
+
+                <div class="form-group">
+                    <label for="dirtyPrice">Dirty Price ($)</label>
+                    <input type="number" id="dirtyPrice" value="950" min="1" step="0.01">
+                </div>
+
+                <div class="grid grid-cols-2" style="gap: 1rem;">
+                    <div class="form-group">
+                        <label for="currentYield">Current Yield (%)</label>
+                        <input type="number" id="currentYield" value="5.26" min="0" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="ytm">YTM (%)</label>
+                        <input type="number" id="ytm" value="6" min="0" step="0.01">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2" style="gap: 1rem;">
+                    <div class="form-group">
+                        <label for="couponRate">Coupon Rate (%)</label>
+                        <input type="number" id="couponRate" value="5" min="0" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="couponType">Coupon Type</label>
+                        <select id="couponType">
+                            <option value="fixed">Fixed Rate</option>
+                            <option value="floating">Floating Rate</option>
+                            <option value="zero">Zero Coupon</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="maturityDate">Maturity Date</label>
+                    <input type="date" id="maturityDate">
+                </div>
+
+                <!-- Added Next Coupon Date mostly for completeness if needed later -->
+                <div class="form-group" style="display: none;">
+                    <label for="nextCouponDate">Next Coupon Date</label>
+                    <input type="date" id="nextCouponDate">
+                </div>
+            </div>
+
+            <!-- Risk & Ratings -->
+            <div class="card">
+                <h3 style="color: var(--primary-light); font-size: 1.25rem; margin-bottom: 1.5rem;">Risk Profile</h3>
+
+                <div class="form-group">
+                    <label for="fitchRating">Credit Rating (Fitch/S&P)</label>
+                    <select id="fitchRating">
+                        <option value="AAA">AAA (Prime)</option>
+                        <option value="AA">AA (High Grade)</option>
+                        <option value="A">A (Upper Medium)</option>
+                        <option value="BBB">BBB (Lower Medium)</option>
+                        <option value="BB">BB (Non-Investment)</option>
+                        <option value="B">B (Highly Speculative)</option>
+                        <option value="CCC">CCC (Substantial Risk)</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-2" style="gap: 1rem;">
+                    <div class="form-group">
+                        <label for="macaulayDuration">Macaulay Duration</label>
+                        <input type="number" id="macaulayDuration" value="6" min="0" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label for="modifiedDuration">Modified Duration</label>
+                        <input type="number" id="modifiedDuration" value="5.5" min="0" step="0.1">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="convexity">Convexity</label>
+                    <input type="number" id="convexity" value="35" min="0" step="0.1">
+                </div>
+            </div>
+
+            <!-- Market Data -->
+            <div class="card">
+                <h3 style="color: var(--primary-light); font-size: 1.25rem; margin-bottom: 1.5rem;">Market Context</h3>
+
+                <div class="form-group">
+                    <label for="openYield">Open Yield (%)</label>
+                    <input type="number" id="openYield" value="5.8" min="0" step="0.01">
+                </div>
+
+                <div class="grid grid-cols-2" style="gap: 1rem; margin-bottom: 1rem;">
+                    <div>
+                        <label for="dayRangeHigh" style="font-size: 0.75rem; color: #94a3b8;">Day Range High</label>
+                        <input type="number" id="dayRangeHigh" value="6.2" min="0" step="0.01">
+                    </div>
+                    <div>
+                        <label for="dayRangeLow" style="font-size: 0.75rem; color: #94a3b8;">Day Range Low</label>
+                        <input type="number" id="dayRangeLow" value="5.8" min="0" step="0.01">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2" style="gap: 1rem;">
+                    <div>
+                        <label for="yearRangeHigh" style="font-size: 0.75rem; color: #94a3b8;">52-Week High</label>
+                        <input type="number" id="yearRangeHigh" value="7.5" min="0" step="0.01">
+                    </div>
+                    <div>
+                        <label for="yearRangeLow" style="font-size: 0.75rem; color: #94a3b8;">52-Week Low</label>
+                        <input type="number" id="yearRangeLow" value="4.2" min="0" step="0.01">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Economic & Personal -->
+            <div class="card">
+                <h3 style="color: var(--primary-light); font-size: 1.25rem; margin-bottom: 1.5rem;">Economic & Personal
+                </h3>
+
+                <div class="form-group">
+                    <label for="inflationRate">Inflation Rate (%)</label>
+                    <input type="number" id="inflationRate" value="2.5" min="0" step="0.01">
+                </div>
+
+                <div class="grid grid-cols-2" style="gap: 1rem;">
+                    <div class="form-group">
+                        <label for="currencyDevaluation">Currency Deval (%)</label>
+                        <input type="number" id="currencyDevaluation" value="0" min="-10" max="10" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="riskFreeRate">Risk-Free Rate (%)</label>
+                        <input type="number" id="riskFreeRate" value="4" min="0" step="0.01">
+                    </div>
+                </div>
+
+                <div style="border-top: 1px solid var(--border); padding-top: 1rem; margin-top: 1rem;">
+                    <label style="color: var(--primary-light); margin-bottom: 1rem;">Hold/Sell Specifics</label>
+                    <div class="grid grid-cols-2" style="gap: 1rem;">
+                        <div class="form-group">
+                            <label for="currentInvestment">Investment ($)</label>
+                            <input type="number" id="currentInvestment" value="0" min="0" step="1" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="purchasePrice">Buy Price ($)</label>
+                            <input type="number" id="purchasePrice" value="1000" min="1" step="0.01" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="purchaseDate">Purchase Date</label>
+                        <input type="date" id="purchaseDate" disabled>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="errorContainer"></div>
+
+        <button onclick="evaluateBond()" class="btn btn-primary"
+            style="width: 100%; margin-top: 2rem; padding: 1.25rem; font-size: 1.1rem; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.4);">
+            RUN INTELLIGENT ANALYSIS
+        </button>
+
+        <!-- Results Section -->
+        <div id="resultsSection" class="results-section" style="display: none;">
+            <div class="score-card animate-fade-in">
+                <p class="score-label">Composite Smart Score</p>
+                <p class="score-value" id="scoreValue">--</p>
+                <p class="score-max">Out of 2.0</p>
+            </div>
+
+            <div id="decisionBox" class="animate-fade-in" style="animation-delay: 0.1s;"></div>
+
+            <div class="grid grid-cols-2">
+                <div class="step-section animate-fade-in" style="animation-delay: 0.2s;">
+                    <p class="step-title">Fundamental Analysis</p>
+                    <div id="step1Results"></div>
+                    <div id="step2Results"></div>
+                    <div id="step3Results"></div>
+                </div>
+
+                <div class="step-section animate-fade-in" style="animation-delay: 0.3s;">
+                    <p class="step-title">Risk & Structure</p>
+                    <div id="step4Results"></div>
+                    <div id="step5Results"></div>
+                    <div id="step6Results"></div>
+                </div>
+            </div>
+
+            <div class="score-breakdown animate-fade-in" style="animation-delay: 0.4s;">
+                <p class="breakdown-title">Score Logic</p>
+                <div id="scoreBreakdown"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/navigation.js"></script>
+    <script src="js/footer.js"></script>
+    <script src="js/smart-pro.js"></script>
+</body>
+
+</html>
