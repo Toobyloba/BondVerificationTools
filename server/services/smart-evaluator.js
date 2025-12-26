@@ -19,6 +19,14 @@ function evaluate(data) {
     const maturityDate = new Date(maturityDateStr);
     if (isNaN(maturityDate.getTime())) throw new Error("Invalid Maturity Date");
 
+    // Extract new inputs
+    const {
+        openPrice, dayPriceHigh, dayPriceLow,
+        yearPriceHigh, yearPriceLow,
+        accruedInterest = 0,
+        faceValue = 100
+    } = data;
+
     let totalScore = 0;
     const results = {};
 
@@ -26,42 +34,57 @@ function evaluate(data) {
     let step1 = { status: 'fail', score: 0, value: '', detail: '' };
 
     if (mode === 'buy') {
-        const range = priceYearHigh - priceYearLow;
-        // Logic: Yield High = Price Low (Undervalued)
-        // Frontend sent ytm, yearRangeHigh (yield), yearRangeLow (yield).
-        // Reuse yield comparison from frontend logic.
-        // Wait, data names from frontend: yearRangeHigh/Low are YIELDS.
+        // 1A. Liquidity Check (Volatility)
+        const daySpread = dayPriceLow > 0 ? (dayPriceHigh - dayPriceLow) / dayPriceLow : 0;
+        const isVolatile = daySpread > 0.02; // >2% intraday swing is volatile for bonds
 
-        const yieldPercentile = range === 0 ? 0.5 : (ytm - priceYearLow) / range;
+        // 1B. Price Valuation (52-Week Range methodology)
+        const range = yearPriceHigh - yearPriceLow;
+        // Low Price = High Value (Good Entry)
+        // Percentile: 0% = At Low (Best), 100% = At High (Worst)
+        const pricePercentile = range === 0 ? 0.5 : (dirtyPrice - yearPriceLow) / range;
 
-        if (yieldPercentile > 0.7) {
+        if (pricePercentile < 0.2) {
             step1.status = 'pass';
-            step1.detail = `Current yield ${(ytm * 100).toFixed(2)}% is near 52-week high. Bond appears undervalued.`;
+            step1.detail = `Price $${dirtyPrice} is near 52-week low ($${yearPriceLow}). Strong Value Entry.`;
             step1.score = 2;
-        } else if (yieldPercentile > 0.4) {
+        } else if (pricePercentile < 0.6) {
             step1.status = 'caution';
-            step1.detail = `Current yield is moderate vs. historical range. Acceptable entry.`;
-            step1.score = 1;
+            step1.detail = `Price is moderate. ${isVolatile ? 'Warning: High Intraday Volatility.' : 'Acceptable entry.'}`;
+            step1.score = isVolatile ? 0.5 : 1; // Penalty for volatility
         } else {
             step1.status = 'fail';
-            step1.detail = `Current yield ${(ytm * 100).toFixed(2)}% near 52-week low. Bond appears overvalued.`;
+            step1.detail = `Price $${dirtyPrice} is near 52-week high ($${yearPriceHigh}). Overvalued.`;
             step1.score = 0;
         }
-        step1.value = `Yield: ${(ytm * 100).toFixed(2)}%`;
+
+        // True Cost & Gain Insight
+        const cleanPrice = dirtyPrice - accruedInterest;
+        const capitalGain = faceValue - cleanPrice;
+        step1.value = `Clean: $${cleanPrice.toFixed(2)}`;
+
+        let extraInfo = [];
+        if (accruedInterest > 0) extraInfo.push(`+$${accruedInterest.toFixed(2)} Accrued`);
+        if (capitalGain > 0) extraInfo.push(`Guaranteed Capital Gain: $${capitalGain.toFixed(2)}`);
+
+        if (extraInfo.length > 0) step1.detail += ` (${extraInfo.join(', ')})`;
+
     } else {
-        // Hold/Sell Mode
-        const pnl = ((dirtyPrice - purchasePrice) / purchasePrice) * 100;
+        // Hold/Sell Mode - Profit Analysis
+        const effectiveCost = purchasePrice; // Could add transaction costs here later
+        const pnl = ((dirtyPrice - effectiveCost) / effectiveCost) * 100;
+
         if (pnl > 5) {
             step1.status = 'pass';
-            step1.detail = `Position is profitable (+${pnl.toFixed(2)}%). Hold for now.`;
+            step1.detail = `Position is profitable (+${pnl.toFixed(2)}%). Hold for gains.`;
             step1.score = 2;
-        } else if (pnl > -5) {
+        } else if (pnl > -3) {
             step1.status = 'caution';
-            step1.detail = `Position near breakeven (${pnl.toFixed(2)}%). Acceptable hold.`;
+            step1.detail = `Position near breakeven (${pnl.toFixed(2)}%). Watch closely.`;
             step1.score = 1;
         } else {
             step1.status = 'fail';
-            step1.detail = `Position underwater (${pnl.toFixed(2)}%). Consider exit.`;
+            step1.detail = `Position underwater (${pnl.toFixed(2)}%). Consider stop-loss.`;
             step1.score = 0;
         }
         step1.value = `P&L: ${pnl > 0 ? '+' : ''}${pnl.toFixed(2)}%`;
@@ -69,25 +92,33 @@ function evaluate(data) {
     totalScore += step1.score * 0.25;
     results.step1 = step1;
 
-    // STEP 2: Real Yield (40%)
+    // STEP 2: Real Yield & Spread Analysis (40%)
     const realYield = ((1 + ytm) / ((1 + inflationRate) * (1 + currencyDev))) - 1;
+    const spread = ytm - (data.riskFreeRate || 0);
+
     let step2 = { status: 'fail', score: 0, value: `${(realYield * 100).toFixed(2)}%`, detail: '' };
 
-    if (realYield > 0.02) {
+    if (realYield > 0.02 && spread > 0.015) {
         step2.status = 'pass';
         step2.score = 2;
-        step2.detail = 'Returns beat inflation and currency risk.';
+        step2.detail = 'Returns beat inflation. Healthy spread vs Risk Free Rate.';
     } else if (realYield > 0) {
         step2.status = 'caution';
         step2.score = 1;
-        step2.detail = 'Returns barely cover inflation/currency loss.';
+        step2.detail = spread < 0.015 ? 'Yield positive, but Spread < 1.5% (Risk not justified).' : 'Returns barely cover inflation.';
+        if (spread < 0.015) step2.score = 0.5; // Penalty for low spread
     } else {
         step2.status = 'fail';
         step2.score = 0;
         step2.detail = 'Returns do not cover inflation/currency loss.';
     }
-    // Formula string for display
-    step2.formula = `((1 + ${(ytm * 100).toFixed(2)}%) / ((1 + ${(inflationRate * 100).toFixed(2)}%) * (1 + ${(currencyDev * 100).toFixed(2)}%))) - 1`;
+
+    // Annual Income
+    const annualIncome = faceValue * (data.couponRate || 0);
+    step2.value = `Real: ${(realYield * 100).toFixed(2)}%`;
+    if (annualIncome > 0) step2.detail += ` Pays $${annualIncome.toFixed(2)}/yr.`;
+
+    step2.formula = `Spread: ${(spread * 100).toFixed(2)}% | Real Yield: ((1 + YTM) / (Inflation * FX)) - 1`;
     totalScore += step2.score * 0.40;
     results.step2 = step2;
 

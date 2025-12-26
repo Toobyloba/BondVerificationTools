@@ -139,6 +139,60 @@
             <div class="card">
                 <h3 style="color: var(--primary-light); font-size: 1.25rem; margin-bottom: 1.5rem;">Market Context</h3>
 
+                <!-- Price Metrics (NEW) -->
+                <h4
+                    style="font-size: 0.9rem; text-transform: uppercase; color: #94a3b8; margin-bottom: 0.75rem; letter-spacing: 0.05em;">
+                    Price Structure</h4>
+
+                <div class="grid grid-cols-2" style="gap: 1rem;">
+                    <div class="form-group">
+                        <label for="openPrice">Open Price ($)</label>
+                        <input type="number" id="openPrice" value="948.50" min="0" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="faceValue">Face Value ($)</label>
+                        <input type="number" id="faceValue" value="1000.00" min="0" step="0.01">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2" style="gap: 1rem; margin-bottom: 1rem;">
+                    <div>
+                        <label for="accruedInterest">Accrued Interest ($)</label>
+                        <input type="number" id="accruedInterest" value="12.50" min="0" step="0.01">
+                    </div>
+                    <div><!-- Spacer --></div>
+                </div>
+
+                <div class="grid grid-cols-2" style="gap: 1rem; margin-bottom: 1rem;">
+                    <div>
+                        <label for="dayPriceHigh" style="font-size: 0.75rem; color: #94a3b8;">Day Low ($)</label>
+                        <input type="number" id="dayPriceLow" value="945.00" min="0" step="0.01">
+                    </div>
+                    <div>
+                        <label for="dayPriceLow" style="font-size: 0.75rem; color: #94a3b8;">Day High ($)</label>
+                        <input type="number" id="dayPriceHigh" value="955.00" min="0" step="0.01">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2" style="gap: 1rem; margin-bottom: 1.5rem;">
+                    <div>
+                        <label for="yearPriceLow" style="font-size: 0.75rem; color: #94a3b8;">52-Wk Price Low
+                            ($)</label>
+                        <input type="number" id="yearPriceLow" value="920.00" min="0" step="0.01">
+                    </div>
+                    <div>
+                        <label for="yearPriceHigh" style="font-size: 0.75rem; color: #94a3b8;">52-Wk Price High
+                            ($)</label>
+                        <input type="number" id="yearPriceHigh" value="980.00" min="0" step="0.01">
+                    </div>
+                </div>
+
+                <hr style="border-top: 1px solid var(--border); margin: 1.5rem 0;">
+
+                <!-- Yield Metrics (EXISTING) -->
+                <h4
+                    style="font-size: 0.9rem; text-transform: uppercase; color: #94a3b8; margin-bottom: 0.75rem; letter-spacing: 0.05em;">
+                    Yield Context</h4>
                 <div class="form-group">
                     <label for="openYield">Open Yield (%)</label>
                     <input type="number" id="openYield" value="5.8" min="0" step="0.01">
@@ -146,22 +200,22 @@
 
                 <div class="grid grid-cols-2" style="gap: 1rem; margin-bottom: 1rem;">
                     <div>
-                        <label for="dayRangeHigh" style="font-size: 0.75rem; color: #94a3b8;">Day Range High</label>
+                        <label for="dayRangeHigh" style="font-size: 0.75rem; color: #94a3b8;">Day Yield High</label>
                         <input type="number" id="dayRangeHigh" value="6.2" min="0" step="0.01">
                     </div>
                     <div>
-                        <label for="dayRangeLow" style="font-size: 0.75rem; color: #94a3b8;">Day Range Low</label>
+                        <label for="dayRangeLow" style="font-size: 0.75rem; color: #94a3b8;">Day Yield Low</label>
                         <input type="number" id="dayRangeLow" value="5.8" min="0" step="0.01">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-2" style="gap: 1rem;">
                     <div>
-                        <label for="yearRangeHigh" style="font-size: 0.75rem; color: #94a3b8;">52-Week High</label>
+                        <label for="yearRangeHigh" style="font-size: 0.75rem; color: #94a3b8;">52-Wk Yield High</label>
                         <input type="number" id="yearRangeHigh" value="7.5" min="0" step="0.01">
                     </div>
                     <div>
-                        <label for="yearRangeLow" style="font-size: 0.75rem; color: #94a3b8;">52-Week Low</label>
+                        <label for="yearRangeLow" style="font-size: 0.75rem; color: #94a3b8;">52-Wk Yield Low</label>
                         <input type="number" id="yearRangeLow" value="4.2" min="0" step="0.01">
                     </div>
                 </div>

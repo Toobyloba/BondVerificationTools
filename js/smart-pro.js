@@ -19,7 +19,52 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initial mode setup
     const checkedMode = document.querySelector('input[name="mode"]:checked');
     if (checkedMode) updateMode(checkedMode.value);
+
+    // Load saved values
+    loadInputs();
+
+    // Auto-save listeners
+    document.querySelectorAll('input, select').forEach(input => {
+        input.addEventListener('change', saveInputs);
+        input.addEventListener('input', saveInputs);
+    });
 });
+
+function saveInputs() {
+    const inputs = document.querySelectorAll('input, select');
+    const data = {};
+    inputs.forEach(input => {
+        if (input.type === 'radio') {
+            if (input.checked) data[input.name] = input.value;
+        } else {
+            data[input.id] = input.value;
+        }
+    });
+    localStorage.setItem('smartProInputs', JSON.stringify(data));
+}
+
+function loadInputs() {
+    const saved = localStorage.getItem('smartProInputs');
+    if (!saved) return;
+
+    try {
+        const data = JSON.parse(saved);
+        Object.keys(data).forEach(key => {
+            if (key === 'mode') {
+                const radio = document.querySelector(`input[name="mode"][value="${data[key]}"]`);
+                if (radio) {
+                    radio.checked = true;
+                    updateMode(data[key]);
+                }
+            } else {
+                const input = document.getElementById(key);
+                if (input) input.value = data[key];
+            }
+        });
+    } catch (e) {
+        console.error("Failed to load saved inputs:", e);
+    }
+}
 
 function updateMode(mode) {
     const currentInvField = document.getElementById('currentInvestment');
@@ -83,8 +128,19 @@ async function evaluateBond() {
             currencyDev: parseFloat(document.getElementById('currencyDevaluation').value) / 100,
             riskFreeRate: parseFloat(document.getElementById('riskFreeRate').value) / 100,
             openYield: parseFloat(document.getElementById('openYield').value) / 100,
-            priceYearHigh: parseFloat(document.getElementById('yearRangeHigh').value) / 100, // Matches backend expectation
+
+            // Legacy Yield Inputs (Still sent for compatibility or fallback)
+            priceYearHigh: parseFloat(document.getElementById('yearRangeHigh').value) / 100,
             priceYearLow: parseFloat(document.getElementById('yearRangeLow').value) / 100,
+
+            // New Price Metrics
+            openPrice: parseFloat(document.getElementById('openPrice').value),
+            dayPriceHigh: parseFloat(document.getElementById('dayPriceHigh').value),
+            dayPriceLow: parseFloat(document.getElementById('dayPriceLow').value),
+            yearPriceHigh: parseFloat(document.getElementById('yearPriceHigh').value),
+            yearPriceLow: parseFloat(document.getElementById('yearPriceLow').value),
+            accruedInterest: parseFloat(document.getElementById('accruedInterest').value),
+            faceValue: parseFloat(document.getElementById('faceValue').value) || 100,
 
             // Hold/Sell specific
             currentInvestment: parseFloat(document.getElementById('currentInvestment').value) || 0,
