@@ -44,6 +44,32 @@ Since this is a specific type of application (Node.js Backend + Static Frontend)
 
 ---
 
+## 🔄 Phase 6: Automated Deployment (Webhooks)
+To automatically deploy when you push to GitHub, follow these steps:
+
+### 1. Configure the `deploy.php` script
+1.  Open `deploy.php` in your local project.
+2.  **Edit Line 14**: Update `$REPO_DIR` to point to your **Git Repository folder** on the server.
+    *   *Note*: This is likely different from your app folder. If you set up Git via cPanel, it's usually `repositories/your_repo_name`.
+    *   Example: `$REPO_DIR = '/home/hypeiato/repositories/bondmetrics';`
+3.  Upload `deploy.php` to your **public_html** or `bondmetrics-app` folder (wherever your specific domain points to).
+    *   URL should be accessible: `https://bondmetrics.pro/deploy.php`
+
+### 2. Add Webhook to GitHub
+1.  Go to your GitHub Repository.
+2.  Click **Settings** > **Webhooks** > **Add webhook**.
+3.  **Payload URL**: `https://bondmetrics.pro/deploy.php`
+4.  **Content type**: `application/json` (or default).
+5.  **Just the push event**: Selected.
+6.  Click **Add webhook**.
+
+### 3. Test
+1.  Push a change to GitHub.
+2.  Check the "Recent Deliveries" in GitHub Webhook settings to see if it succeeded (Green checkmark).
+3.  Check `deploy_log.txt` on your server (created next to `deploy.php`) to debug any errors.
+
+---
+
 ## ✅ Phase 5: Verification
 1.  Click the **Restart** button in the Node.js app interface.
 2.  Visit `https://www.bondmetrics.pro`.
