@@ -217,6 +217,14 @@
                 <canvas id="trafficTypeChart"></canvas>
             </div>
 
+            <!-- Device Usage (NEW) -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3 class="chart-title">Device Usage</h3>
+                </div>
+                <canvas id="deviceChart"></canvas>
+            </div>
+
             <!-- Hourly Traffic -->
             <div class="chart-card" style="grid-column: 1 / -1;">
                 <div class="chart-header">
@@ -303,6 +311,7 @@
             // Charts
             renderPageViewsChart(data.page_views);
             renderTrafficChart(data.humans, data.bots);
+            renderDeviceChart(data.user_agents);
             renderHourlyChart(data.hourly_stats);
         }
 
@@ -350,6 +359,34 @@
                     datasets: [{
                         data: [humans, bots],
                         backgroundColor: ['#10b981', '#64748b'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+        }
+
+        function renderDeviceChart(userAgents) {
+            const ctx = document.getElementById('deviceChart').getContext('2d');
+
+            // Handle empty data
+            if (!userAgents) userAgents = { 'Desktop': 0, 'Mobile': 0, 'Tablet': 0 };
+
+            const labels = Object.keys(userAgents);
+            const values = Object.values(userAgents);
+
+            if (window.deviceChartInstance) window.deviceChartInstance.destroy();
+
+            window.deviceChartInstance = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: ['#3b82f6', '#f59e0b', '#8b5cf6'],
                         borderWidth: 0
                     }]
                 },
